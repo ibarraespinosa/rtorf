@@ -16,6 +16,7 @@ obs_convolve(
   name_var_flux = 1,
   factor = 1e+09,
   fn = NULL,
+  flip = FALSE,
   as_list = FALSE,
   verbose = TRUE
 )
@@ -44,6 +45,8 @@ if numeric, identify the var names and you select which of them (first, second, 
 \item{factor}{number to multiply fluxes.}
 
 \item{fn}{string with function to aggregate convolved fluxes, e.g. `mean`, `sum`, `max`, etc.}
+
+\item{flip}{Logical, to vertically flip emissions, or not}
 
 \item{as_list}{Logical, to return list of arrays}
 

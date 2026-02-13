@@ -1,5 +1,10 @@
 # NEWS
 
+### rtorf 3.3.0 (Release date: 2026-02-013)
+
+Fix documentation for CRAN.
+Add argument to flip vertically NetCDF in obs_convolve
+
 ### rtorf 3.2.4 (Release date: 2026-02-01)
 
 Fix documentation for CRAN.

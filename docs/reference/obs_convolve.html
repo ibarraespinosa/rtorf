@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">rtorf</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.2.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -65,6 +65,7 @@
 <span>  name_var_flux <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  factor <span class="op">=</span> <span class="fl">1e+09</span>,</span>
 <span>  fn <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  flip <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  as_list <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -120,6 +121,10 @@ if numeric, identify the var names and you select which of them (first, second, 
 <dd><p>string with function to aggregate convolved fluxes, e.g. `mean`, `sum`, `max`, etc.</p></dd>
 
 
+<dt id="arg-flip">flip<a class="anchor" aria-label="anchor" href="#arg-flip"></a></dt>
+<dd><p>Logical, to vertically flip emissions, or not</p></dd>
+
+
 <dt id="arg-as-list">as_list<a class="anchor" aria-label="anchor" href="#arg-as-list"></a></dt>
 <dd><p>Logical, to return list of arrays</p></dd>
 
@@ -128,6 +133,11 @@ if numeric, identify the var names and you select which of them (first, second, 
 <dd><p>Logical, to display more information</p></dd>
 
 </dl></div>
+    <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    <p>An array of footprints and convolved footprints, or a list of footprints, convolved fooprints,
+latitudes, longitudes and time.</p>
+    </div>
     <div class="section level2">
     <h2 id="note">Note<a class="anchor" aria-label="anchor" href="#note"></a></h2>
     <p>main assumption is that fluxes have same spatial dimensions as footprints

@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">rtorf</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.2.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -73,7 +73,7 @@
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>aircraft-pfp</h1>
             
-            <h4 data-toc-skip class="date">2026-01-22</h4>
+            <h4 data-toc-skip class="date">2026-02-13</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/noaa-gml/rtorf/blob/HEAD/vignettes/aircraft-pfp.Rmd" class="external-link"><code>vignettes/aircraft-pfp.Rmd</code></a></small>
       <div class="d-none name"><code>aircraft-pfp.Rmd</code></div>
@@ -568,7 +568,7 @@ Adding time</code></pre>
 <p>Now we add local time</p>
 <div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">df3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/obs_addltime.html">obs_addltime</a></span><span class="op">(</span><span class="va">df2</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/setorder.html" class="external-link">setorderv</a></span><span class="op">(</span><span class="va">df3</span>, cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"site_code"</span>, <span class="st">"timeUTC"</span>, <span class="st">"dataset_calibration_scale"</span><span class="op">)</span>,</span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/setorder.html" class="external-link">setorderv</a></span><span class="op">(</span><span class="va">df3</span>, cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"site_code"</span>, <span class="st">"timeUTC"</span>, <span class="st">"dataset_calibration_scale"</span><span class="op">)</span>,</span>
 <span>          order <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">df3</span></span></code></pre></div>
 <pre><code>                 key_time site_code altitude_final type_altitude lab_1_abbr
@@ -666,7 +666,7 @@ with 4 digits</p>
 </h3>
 <div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">message</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">out</span>,<span class="st">"_"</span>, <span class="va">datasetid</span>, <span class="st">".txt\n"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/fwrite.html" class="external-link">fwrite</a></span><span class="op">(</span><span class="va">master</span>,</span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/fwrite.html" class="external-link">fwrite</a></span><span class="op">(</span><span class="va">master</span>,</span>
 <span>       <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">out</span>,<span class="st">"_"</span>, <span class="va">datasetid</span>, <span class="st">".txt"</span><span class="op">)</span>,</span>
 <span>       sep <span class="op">=</span> <span class="st">" "</span><span class="op">)</span></span></code></pre></div>
 <pre><code>C:\Users\sibarrae\AppData\Local\Temp\RtmpAj3Z3p\file7f9c18b239ca_aircraft-pfp.txt</code></pre>
@@ -676,7 +676,7 @@ with 4 digits</p>
 </h3>
 <div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">message</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">out</span>,<span class="st">"_"</span>, <span class="va">datasetid</span>, <span class="st">".csv\n"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/fwrite.html" class="external-link">fwrite</a></span><span class="op">(</span><span class="va">master</span>,</span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/fwrite.html" class="external-link">fwrite</a></span><span class="op">(</span><span class="va">master</span>,</span>
 <span>       <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">out</span>,<span class="st">"_"</span>, <span class="va">datasetid</span>, <span class="st">".csv"</span><span class="op">)</span>,</span>
 <span>       sep <span class="op">=</span> <span class="st">","</span><span class="op">)</span></span></code></pre></div>
 <pre><code>C:\Users\sibarrae\AppData\Local\Temp\RtmpAj3Z3p\file7f9c18b239ca_aircraft-pfp.csv</code></pre>
@@ -858,7 +858,7 @@ files. Now we filter selected columns</p>
 <code class="sourceCode R"><span><span class="kw">if</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">receptor_agl</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">message</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">out</span>, <span class="st">"_"</span>, <span class="va">datasetid</span>, <span class="st">"_receptor_AGL.txt"</span><span class="op">)</span>, <span class="st">"\n"</span><span class="op">)</span></span>
 <span></span>
-<span>  <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/fwrite.html" class="external-link">fwrite</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">receptor_agl</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/fwrite.html" class="external-link">fwrite</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">receptor_agl</span>,</span>
 <span>         file <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">out</span>, <span class="st">"_"</span>, <span class="va">datasetid</span>, <span class="st">"_receptor_AGL.txt"</span><span class="op">)</span>,</span>
 <span>         sep <span class="op">=</span> <span class="st">" "</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
@@ -866,7 +866,7 @@ files. Now we filter selected columns</p>
 <span><span class="kw">if</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">receptor_asl</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">message</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">out</span>, <span class="st">"_"</span>, <span class="va">datasetid</span>, <span class="st">"_receptor_ASL.txt"</span><span class="op">)</span>, <span class="st">"\n"</span><span class="op">)</span></span>
 <span></span>
-<span>  <span class="fu"><a href="https://rdatatable.gitlab.io/data.table/reference/fwrite.html" class="external-link">fwrite</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">receptor_asl</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/data.table/man/fwrite.html" class="external-link">fwrite</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">receptor_asl</span>,</span>
 <span>         file <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">out</span>, <span class="st">"_"</span>, <span class="va">datasetid</span>, <span class="st">"receptor_ASL.txt"</span><span class="op">)</span>,</span>
 <span>         sep <span class="op">=</span> <span class="st">" "</span><span class="op">)</span></span>
 <span></span>

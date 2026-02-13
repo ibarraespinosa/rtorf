@@ -15,6 +15,7 @@
 #' if numeric, identify the var names and you select which of them (first, second, etc)
 #' @param factor number to multiply fluxes.
 #' @param fn string with function to aggregate convolved fluxes, e.g. `mean`, `sum`, `max`, etc.
+#' @param flip Logical, to vertically flip emissions, or not
 #' @param as_list Logical, to return list of arrays
 #' @param verbose Logical, to display more information
 #' @return An array of footprints and convolved footprints, or a list of footprints, convolved fooprints,
@@ -39,6 +40,7 @@ obs_convolve <- function(
   name_var_flux = 1,
   factor = 1e9,
   fn = NULL,
+  flip = FALSE,
   as_list = FALSE,
   verbose = TRUE
 ) {
@@ -241,7 +243,12 @@ obs_convolve <- function(
       ) *
         factor
 
-      conv_bio[,, j] <- foot[,, j] * flux_bio
+      if (flip) {
+        dims <- dim(flux_bio)
+        conv_bio[,, j] <- foot[,, j] * flux_bio[, dims[2]:1]
+      } else {
+        conv_bio[,, j] <- foot[,, j] * flux_bio
+      }
 
       # ocn
       flux_ocn <- ncdf4::ncvar_get(
@@ -250,7 +257,12 @@ obs_convolve <- function(
       ) *
         factor
 
-      conv_ocn[,, j] <- foot[,, j] * flux_ocn
+      if (flip) {
+        dims <- dim(flux_ocn)
+        conv_ocn[,, j] <- foot[,, j] * flux_ocn[, dims[2]:1]
+      } else {
+        conv_ocn[,, j] <- foot[,, j] * flux_ocn
+      }
 
       # fossil
       flux_fossil <- ncdf4::ncvar_get(
@@ -259,16 +271,26 @@ obs_convolve <- function(
       ) *
         factor
 
-      conv_fossil[,, j] <- foot[,, j] * flux_fossil
+      if (flip) {
+        dims <- dim(flux_fossil)
+        conv_fossil[,, j] <- foot[,, j] * flux_fossil[, dims[2]:1]
+      } else {
+        conv_fossil[,, j] <- foot[,, j] * flux_fossil
+      }
 
-      # bio
+      # fire
       flux_fire <- ncdf4::ncvar_get(
         nc_f,
         paste0("fire_flux_imp_", df_times_foot$hr[j])
       ) *
         factor
 
-      conv_fire[,, j] <- foot[,, j] * flux_fire
+      if (flip) {
+        dims <- dim(flux_fire)
+        conv_fire[,, j] <- foot[,, j] * flux_fire[, dims[2]:1]
+      } else {
+        conv_fire[,, j] <- foot[,, j] * flux_fire
+      }
 
       ncdf4::nc_close(nc_f)
 
@@ -385,7 +407,12 @@ obs_convolve <- function(
       )
     }
 
-    conv[,, j] <- foot[,, j] * flux
+    if (flip) {
+      dims <- dim(flux)
+      conv[,, j] <- foot[,, j] * flux[, dims[2]:1]
+    } else {
+      conv[,, j] <- foot[,, j] * flux
+    }
 
     ncdf4::nc_close(nc_f)
 

@@ -1,0 +1,907 @@
+---
+title: "aircraft-insitu"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{aircraft-insitu}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(rtorf)
+library(data.table)
+```
+
+
+```{r read1, eval = F}
+
+cate = c("aircraft-pfp",
+         "aircraft-insitu",
+         "aircraft-flask",
+         "surface-insitu",
+         "surface-flask", 
+         "surface-pfp",   
+         "tower-insitu",  
+         "aircore",       
+         "shipboard-insitu",
+         "shipboard-flask") 
+
+obs <- "Z:/obspack/obspack_ch4_1_GLOBALVIEWplus_v5.1_2023-03-08/data/nc/"
+index <- obs_summary(obs = obs, 
+                     categories = cate)
+```
+
+```
+#> Number of files of index: 479
+#>               sector     N
+#>               <char> <int>
+#>  1:     aircraft-pfp    42
+#>  2:  aircraft-insitu    17
+#>  3:    surface-flask   106
+#>  4:   surface-insitu   121
+#>  5:   aircraft-flask     4
+#>  6:          aircore     1
+#>  7:      surface-pfp    33
+#>  8:     tower-insitu   150
+#>  9:  shipboard-flask     4
+#> 10: shipboard-insitu     1
+#> 11:    Total sectors   479
+#> Detected 203 files with agl
+#> Detected 276 files without agl
+```
+
+Now we read the `aircraft-insitu` using the function `obs_read_nc`. To this date,
+`solar_time` is not included for aircraft, so we `FALSE` that argument.
+
+```{r readnc, eval = F}
+datasetid <- "aircraft-insitu"
+df <- obs_read_nc(index = index,
+                  categories = datasetid,
+                  solar_time = FALSE,
+                  verbose = T)
+
+```
+
+```
+#> Searching aircraft-insitu...
+#> 1: ch4_above_aircraft-insitu_1_allvalid.nc
+#> 2: ch4_act_aircraft-insitu_428_allvalid-b200.nc
+#> 3: ch4_act_aircraft-insitu_428_allvalid-c130.nc
+#> 4: ch4_ajax_aircraft-insitu_429_allvalid.nc
+#> 5: ch4_cob2003b_aircraft-insitu_59_allvalid.nc
+#> 6: ch4_eco_aircraft-insitu_1_allvalid.nc
+#> 7: ch4_hip_aircraft-insitu_59_allvalid.nc
+#> 8: ch4_iagos-caribic_aircraft-insitu_457_allvalid.nc
+#> 9: ch4_iagos-core_aircraft-insitu_45_allvalid.nc
+#> 10: ch4_korus-aq_aircraft-insitu_428_allvalid-dc8.nc
+#> 11: ch4_man_aircraft-insitu_1_allvalid.nc
+#> 12: ch4_orc_aircraft-insitu_3_allvalid-merge10.nc
+#> 13: ch4_seac4rs_aircraft-insitu_428_allvalid-ER2.nc
+#> 14: ch4_seac4rs_aircraft-insitu_428_allvalid-dc8.nc
+#> 15: ch4_start08_aircraft-insitu_59_allvalid.nc
+#> 16: ch4_tom_aircraft-insitu_1_allvalid.nc
+#> 17: ch4_ugd_aircraft-insitu_1_allvalid.nc
+```
+
+Now we check the data
+
+```{r checkdf, eval = F}
+df
+```
+
+```
+#>           year month   day  hour minute second       time start_time
+#>          <int> <int> <int> <int>  <int>  <int>      <int>      <int>
+#>       1:  2017     4    26    15     32     10 1493220730 1493220730
+#>       2:  2017     4    26    15     32     20 1493220740 1493220740
+#>       3:  2017     4    26    15     32     30 1493220750 1493220750
+#>       4:  2017     4    26    15     32     40 1493220760 1493220760
+#>       5:  2017     4    26    15     32     50 1493220770 1493220770
+#>      ---                                                            
+#> 3158219:  2021    12    10    11     37     45 1639136265 1639136260
+#> 3158220:  2021    12    10    11     37     55 1639136275 1639136270
+#> 3158221:  2021    12    10    11     38      5 1639136285 1639136280
+#> 3158222:  2021    12    10    11     38     15 1639136295 1639136290
+#> 3158223:  2021    12    10    11     38     25 1639136305 1639136300
+#>          midpoint_time             datetime time_decimal       value value_unc
+#>                  <int>               <char>        <num>       <num>     <num>
+#>       1:    1493220730 2017-04-26T15:32:10Z     2017.317 1.96430e-06     5e-10
+#>       2:    1493220740 2017-04-26T15:32:20Z     2017.317 1.96176e-06     5e-10
+#>       3:    1493220750 2017-04-26T15:32:30Z     2017.317 1.96173e-06     5e-10
+#>       4:    1493220760 2017-04-26T15:32:40Z     2017.317 1.96131e-06     5e-10
+#>       5:    1493220770 2017-04-26T15:32:50Z     2017.317 1.96199e-06     5e-10
+#>      ---                                                                      
+#> 3158219:    1639136265 2021-12-10T11:37:45Z     2021.941 1.97308e-06     1e-09
+#> 3158220:    1639136275 2021-12-10T11:37:55Z     2021.941 1.97495e-06     1e-09
+#> 3158221:    1639136285 2021-12-10T11:38:05Z     2021.941 1.97649e-06     1e-09
+#> 3158222:    1639136295 2021-12-10T11:38:15Z     2021.941 1.98205e-06     1e-09
+#> 3158223:    1639136305 2021-12-10T11:38:25Z     2021.941 1.97504e-06     1e-09
+#>          nvalue value_std_dev latitude longitude altitude pressure     u     v
+#>           <int>         <num>    <num>     <num>    <num>    <num> <num> <num>
+#>       1:      4      1.23e-09  40.0391 -105.2320  1617.03   836.39 -2.39  0.16
+#>       2:      5      3.10e-10  40.0391 -105.2290  1617.04   836.78 -1.45  0.33
+#>       3:      5      4.30e-10  40.0391 -105.2240  1617.03   836.79 -1.40  0.94
+#>       4:      4      2.40e-10  40.0391 -105.2190  1630.93   835.28 -3.37  1.82
+#>       5:      5      1.16e-09  40.0389 -105.2120  1650.95   832.78 -2.25  2.68
+#>      ---                                                                      
+#> 3158219:      3      2.96e-09   0.2176   32.5360  1239.50   865.98    NA    NA
+#> 3158220:      3      1.46e-09   0.2142   32.5387  1213.20   867.65    NA    NA
+#> 3158221:      4      3.31e-09   0.2109   32.5413  1199.20   869.33    NA    NA
+#> 3158222:      3      4.50e-09   0.2076   32.5440  1181.10   871.76    NA    NA
+#> 3158223:      4      1.62e-09   0.2044   32.5466  1163.50   873.92    NA    NA
+#>          temperature profile_id      flight_id obs_flag obspack_num
+#>                <num>     <char>         <char>    <int>       <int>
+#>       1:      282.02          0       20170426        1    11109646
+#>       2:      281.79          0       20170426        1    11109647
+#>       3:      281.34          0       20170426        1    11109648
+#>       4:      280.92          1       20170426        1    11109649
+#>       5:      280.43          1       20170426        1    11109650
+#>      ---                                                           
+#> 3158219:      296.70         12 20211210_27100        1     2042566
+#> 3158220:      296.90         12 20211210_27100        1     2042567
+#> 3158221:      297.00         12 20211210_27100        1     2042568
+#> 3158222:      297.20         12 20211210_27100        1     2042569
+#> 3158223:      297.40         12 20211210_27100        1     2042570
+#>                                                                                          obspack_id
+#>                                                                                              <char>
+#>       1: obspack_ch4_1_GLOBALVIEWplus_v6.0_2023-12-01~ch4_above_aircraft-insitu_1_allvalid~11109646
+#>       2: obspack_ch4_1_GLOBALVIEWplus_v6.0_2023-12-01~ch4_above_aircraft-insitu_1_allvalid~11109647
+#>       3: obspack_ch4_1_GLOBALVIEWplus_v6.0_2023-12-01~ch4_above_aircraft-insitu_1_allvalid~11109648
+#>       4: obspack_ch4_1_GLOBALVIEWplus_v6.0_2023-12-01~ch4_above_aircraft-insitu_1_allvalid~11109649
+#>       5: obspack_ch4_1_GLOBALVIEWplus_v6.0_2023-12-01~ch4_above_aircraft-insitu_1_allvalid~11109650
+#>      ---                                                                                           
+#> 3158219:    obspack_ch4_1_GLOBALVIEWplus_v6.0_2023-12-01~ch4_ugd_aircraft-insitu_1_allvalid~2042566
+#> 3158220:    obspack_ch4_1_GLOBALVIEWplus_v6.0_2023-12-01~ch4_ugd_aircraft-insitu_1_allvalid~2042567
+#> 3158221:    obspack_ch4_1_GLOBALVIEWplus_v6.0_2023-12-01~ch4_ugd_aircraft-insitu_1_allvalid~2042568
+#> 3158222:    obspack_ch4_1_GLOBALVIEWplus_v6.0_2023-12-01~ch4_ugd_aircraft-insitu_1_allvalid~2042569
+#> 3158223:    obspack_ch4_1_GLOBALVIEWplus_v6.0_2023-12-01~ch4_ugd_aircraft-insitu_1_allvalid~2042570
+#>          unique_sample_location_num          scale dataset_project
+#>                               <int>         <char>          <char>
+#>       1:                   33175520 WMO CH4 X2004A aircraft-insitu
+#>       2:                   33175521 WMO CH4 X2004A aircraft-insitu
+#>       3:                   33175522 WMO CH4 X2004A aircraft-insitu
+#>       4:                   33175523 WMO CH4 X2004A aircraft-insitu
+#>       5:                   33175519 WMO CH4 X2004A aircraft-insitu
+#>      ---                                                          
+#> 3158219:                   51772833 WMO CH4 X2004A aircraft-insitu
+#> 3158220:                   51772776 WMO CH4 X2004A aircraft-insitu
+#> 3158221:                   51772721 WMO CH4 X2004A aircraft-insitu
+#> 3158222:                   51772671 WMO CH4 X2004A aircraft-insitu
+#> 3158223:                   51772623 WMO CH4 X2004A aircraft-insitu
+#>          dataset_selection_tag
+#>                         <char>
+#>       1:              allvalid
+#>       2:              allvalid
+#>       3:              allvalid
+#>       4:              allvalid
+#>       5:              allvalid
+#>      ---                      
+#> 3158219:              allvalid
+#> 3158220:              allvalid
+#> 3158221:              allvalid
+#> 3158222:              allvalid
+#> 3158223:              allvalid
+#>                                                             site_name
+#>                                                                <char>
+#>       1: Carbon in Arctic Reservoirs Vulnerability Experiment (CARVE)
+#>       2: Carbon in Arctic Reservoirs Vulnerability Experiment (CARVE)
+#>       3: Carbon in Arctic Reservoirs Vulnerability Experiment (CARVE)
+#>       4: Carbon in Arctic Reservoirs Vulnerability Experiment (CARVE)
+#>       5: Carbon in Arctic Reservoirs Vulnerability Experiment (CARVE)
+#>      ---                                                             
+#> 3158219:                           Kajjansi Airfield, Kampala, Uganda
+#> 3158220:                           Kajjansi Airfield, Kampala, Uganda
+#> 3158221:                           Kajjansi Airfield, Kampala, Uganda
+#> 3158222:                           Kajjansi Airfield, Kampala, Uganda
+#> 3158223:                           Kajjansi Airfield, Kampala, Uganda
+#>          site_elevation site_latitude site_longitude  site_country site_code
+#>                   <num>         <num>          <num>        <char>    <char>
+#>       1:     -1.000e+34        -1e+34     -1.000e+34 United States       CRV
+#>       2:     -1.000e+34        -1e+34     -1.000e+34 United States       CRV
+#>       3:     -1.000e+34        -1e+34     -1.000e+34 United States       CRV
+#>       4:     -1.000e+34        -1e+34     -1.000e+34 United States       CRV
+#>       5:     -1.000e+34        -1e+34     -1.000e+34 United States       CRV
+#>      ---                                                                    
+#> 3158219:      1.141e+03         2e-01      3.255e+01        Uganda       UGD
+#> 3158220:      1.141e+03         2e-01      3.255e+01        Uganda       UGD
+#> 3158221:      1.141e+03         2e-01      3.255e+01        Uganda       UGD
+#> 3158222:      1.141e+03         2e-01      3.255e+01        Uganda       UGD
+#> 3158223:      1.141e+03         2e-01      3.255e+01        Uganda       UGD
+#>          site_utc2lst lab_1_abbr dataset_calibration_scale altitude_final
+#>                 <num>     <char>                    <char>          <num>
+#>       1:           -8       NOAA            WMO CH4 X2004A        1617.03
+#>       2:           -8       NOAA            WMO CH4 X2004A        1617.04
+#>       3:           -8       NOAA            WMO CH4 X2004A        1617.03
+#>       4:           -8       NOAA            WMO CH4 X2004A        1630.93
+#>       5:           -8       NOAA            WMO CH4 X2004A        1650.95
+#>      ---                                                                 
+#> 3158219:            3       NOAA            WMO CH4 X2004A        1239.50
+#> 3158220:            3       NOAA            WMO CH4 X2004A        1213.20
+#> 3158221:            3       NOAA            WMO CH4 X2004A        1199.20
+#> 3158222:            3       NOAA            WMO CH4 X2004A        1181.10
+#> 3158223:            3       NOAA            WMO CH4 X2004A        1163.50
+#>          type_altitude air_flag bl_bt_flag elevation event_number flight_flag
+#>                  <num>    <int>      <int>     <num>       <char>       <int>
+#>       1:             1       NA         NA        NA         <NA>          NA
+#>       2:             1       NA         NA        NA         <NA>          NA
+#>       3:             1       NA         NA        NA         <NA>          NA
+#>       4:             1       NA         NA        NA         <NA>          NA
+#>       5:             1       NA         NA        NA         <NA>          NA
+#>      ---                                                                     
+#> 3158219:             1       NA         NA      1138       251934          NA
+#> 3158220:             1       NA         NA      1141       251935          NA
+#> 3158221:             1       NA         NA      1143       251936          NA
+#> 3158222:             1       NA         NA      1140       251937          NA
+#> 3158223:             1       NA         NA      1138       251938          NA
+#>          gps_altitude   h2o         instrument intake_height maneuver_flag
+#>                 <num> <num>             <char>         <num>         <int>
+#>       1:           NA    NA               <NA>            NA            NA
+#>       2:           NA    NA               <NA>            NA            NA
+#>       3:           NA    NA               <NA>            NA            NA
+#>       4:           NA    NA               <NA>            NA            NA
+#>       5:           NA    NA               <NA>            NA            NA
+#>      ---                                                                  
+#> 3158219:           NA    NA Picarro_CFKBDS2302         101.5            NA
+#> 3158220:           NA    NA Picarro_CFKBDS2302          72.2            NA
+#> 3158221:           NA    NA Picarro_CFKBDS2302          56.2            NA
+#> 3158222:           NA    NA Picarro_CFKBDS2302          41.1            NA
+#> 3158223:           NA    NA Picarro_CFKBDS2302          25.5            NA
+#>          maneuver_flagqc pressure_altitude qcflag    rh site_elevation_unit
+#>                    <int>             <num> <char> <num>              <char>
+#>       1:              NA                NA   <NA>    NA                <NA>
+#>       2:              NA                NA   <NA>    NA                <NA>
+#>       3:              NA                NA   <NA>    NA                <NA>
+#>       4:              NA                NA   <NA>    NA                <NA>
+#>       5:              NA                NA   <NA>    NA                <NA>
+#>      ---                                                                   
+#> 3158219:              NA                NA    ..P  79.9                masl
+#> 3158220:              NA                NA    ..P  79.8                masl
+#> 3158221:              NA                NA    ..P  78.3                masl
+#> 3158222:              NA                NA    ..P  78.9                masl
+#> 3158223:              NA                NA    ..P  78.6                masl
+#>                                                                   source_id
+#>                                                                      <char>
+#>       1:                                                               <NA>
+#>       2:                                                               <NA>
+#>       3:                                                               <NA>
+#>       4:                                                               <NA>
+#>       5:                                                               <NA>
+#>      ---                                                                   
+#> 3158219: KampalaExecutiveAviation_CessnaCaravan208B_5XKEB~20211210_27100~12
+#> 3158220: KampalaExecutiveAviation_CessnaCaravan208B_5XKEB~20211210_27100~12
+#> 3158221: KampalaExecutiveAviation_CessnaCaravan208B_5XKEB~20211210_27100~12
+#> 3158222: KampalaExecutiveAviation_CessnaCaravan208B_5XKEB~20211210_27100~12
+#> 3158223: KampalaExecutiveAviation_CessnaCaravan208B_5XKEB~20211210_27100~12
+#>          time_interval value_original_scale
+#>                  <int>                <num>
+#>       1:            NA                   NA
+#>       2:            NA                   NA
+#>       3:            NA                   NA
+#>       4:            NA                   NA
+#>       5:            NA                   NA
+#>      ---                                   
+#> 3158219:            NA                   NA
+#> 3158220:            NA                   NA
+#> 3158221:            NA                   NA
+#> 3158222:            NA                   NA
+#> 3158223:            NA                   NA
+```
+
+Now we can process the data. We first filter for observations
+within our spatial domain:
+
+## Checks and definitions
+
+```{r spatial, eval = F}
+north <- 80
+south <- 10
+west <- -170
+east <- -50
+max_altitude <- 8000
+yy <- 2020
+
+```
+
+We check altitude, intake_height, altitude_final and elevation.
+altitude_final is a column from intake_height, added to match
+column from obs_read text files.
+
+```{r checkcols, eval = F}
+df[, c("altitude", "altitude_final", "intake_height", "elevation")]
+```
+
+```
+#>          altitude altitude_final intake_height elevation
+#>             <num>          <num>         <num>     <num>
+#>       1:  1617.03        1617.03            NA        NA
+#>       2:  1617.04        1617.04            NA        NA
+#>       3:  1617.03        1617.03            NA        NA
+#>       4:  1630.93        1630.93            NA        NA
+#>       5:  1650.95        1650.95            NA        NA
+#>      ---                                                
+#> 3158219:  1239.50        1239.50         101.5      1138
+#> 3158220:  1213.20        1213.20          72.2      1141
+#> 3158221:  1199.20        1199.20          56.2      1143
+#> 3158222:  1181.10        1181.10          41.1      1140
+#> 3158223:  1163.50        1163.50          25.5      1138
+```
+The temporal range of data is
+```{r range_year, eval = F}
+range(df$year)
+```
+
+```
+#> [1] 2003 2021
+```
+
+We also check for dimensions of data
+
+```{r dim_df, eval = F}
+dim(df)
+```
+
+```
+#> [1] 2041758      59
+```
+
+## Filters
+
+```{r spatial_temporal_filter, eval = F}
+df <- df[year == yy]
+
+df <- df[altitude_final < max_altitude &
+           latitude < north &
+           latitude > south &
+           longitude < east &
+           longitude > west]
+dim(df)
+```
+
+```
+#> [1] 236  59
+```
+
+## Adding time as POSIXct class
+
+```{r add_time1, eval = F}
+df <- obs_addtime(df)
+df[, "timeUTC"]
+```
+
+
+```
+#>                  timeUTC
+#>                   <POSc>
+#>   1: 2020-01-08 22:59:55
+#>   2: 2020-01-08 23:00:05
+#>   3: 2020-01-08 23:00:15
+#>   4: 2020-01-08 23:00:25
+#>   5: 2020-01-08 23:00:35
+#>  ---                    
+#> 232: 2020-03-02 22:56:15
+#> 233: 2020-03-02 22:56:25
+#> 234: 2020-03-02 22:56:35
+#> 235: 2020-03-02 22:56:45
+#> 236: 2020-03-02 22:56:55
+```
+
+
+## Cut time
+
+now we can cut time every 20 seconds. We can chosse other frequency as well.
+
+```{r cut_sec, eval = F}
+df$sec2 <- obs_freq(x = df$second,
+                     freq = seq(0, 59, 20))
+df[, c("second", "sec2")]
+```
+
+
+```
+#>      second  sec2
+#>       <int> <num>
+#>   1:     55    40
+#>   2:      5     0
+#>   3:     15     0
+#>   4:     25    20
+#>   5:     35    20
+#>  ---             
+#> 232:     15     0
+#> 233:     25    20
+#> 234:     35    20
+#> 235:     45    40
+#> 236:     55    40
+```
+
+## Aggregate data
+
+now we need to add the column key_time, that it will be used
+to aggregate other variables
+
+```{r key_time, eval = F}
+df$key_time <- ISOdatetime(year = df$year,
+                           month = df$month,
+                           day = df$day,
+                           hour = df$hour,
+                           min = df$minute,
+                           sec = df$sec2,
+                           tz = "UTC")
+df[, c("timeUTC", "key_time")]
+
+```
+
+```
+#>                  timeUTC            key_time
+#>                   <POSc>              <POSc>
+#>   1: 2020-01-08 22:59:55 2020-01-08 22:59:40
+#>   2: 2020-01-08 23:00:05 2020-01-08 23:00:00
+#>   3: 2020-01-08 23:00:15 2020-01-08 23:00:00
+#>   4: 2020-01-08 23:00:25 2020-01-08 23:00:20
+#>   5: 2020-01-08 23:00:35 2020-01-08 23:00:20
+#>  ---                                        
+#> 232: 2020-03-02 22:56:15 2020-03-02 22:56:00
+#> 233: 2020-03-02 22:56:25 2020-03-02 22:56:20
+#> 234: 2020-03-02 22:56:35 2020-03-02 22:56:20
+#> 235: 2020-03-02 22:56:45 2020-03-02 22:56:40
+#> 236: 2020-03-02 22:56:55 2020-03-02 22:56:40
+```
+         
+```{r aggregatingdata, eval = F}
+df2 <- obs_agg(df, cols =  c("year",
+                             "month",
+                             "day",
+                             "hour",
+                             "minute",
+                             "second",
+                             "time",
+                             "time_decimal",
+                             "value",
+                             "latitude",
+                             "longitude",
+                             "altitude_final",
+                             "elevation",
+                             "intake_height",
+                             "gps_altitude",
+                             "pressure",
+                             "pressure_altitude",
+                             "u", "v", "temperature",
+                             "type_altitude"))
+```
+
+```
+#> Adding time
+```
+
+## Add local time
+
+Now we add local time
+
+```{r addlt, eval = F}
+df3 <- obs_addltime(df2)
+setorderv(df3, cols = c("site_code", "timeUTC"),
+          order = c(-1, 1))
+df3
+
+
+```
+
+```
+#>                  timeUTC site_code  lab_1_abbr dataset_calibration_scale  year
+#>                   <POSc>    <char>      <char>                    <char> <int>
+#>   1: 2020-01-08 22:59:40     IAGOS KIT/IMK-ASF            WMO CH4 X2004A  2020
+#>   2: 2020-01-08 23:00:00     IAGOS KIT/IMK-ASF            WMO CH4 X2004A  2020
+#>   3: 2020-01-08 23:00:20     IAGOS KIT/IMK-ASF            WMO CH4 X2004A  2020
+#>   4: 2020-01-08 23:00:40     IAGOS KIT/IMK-ASF            WMO CH4 X2004A  2020
+#>   5: 2020-01-08 23:01:00     IAGOS KIT/IMK-ASF            WMO CH4 X2004A  2020
+#>  ---                                                                          
+#> 115: 2020-03-02 22:55:20     IAGOS KIT/IMK-ASF            WMO CH4 X2004A  2020
+#> 116: 2020-03-02 22:55:40     IAGOS KIT/IMK-ASF            WMO CH4 X2004A  2020
+#> 117: 2020-03-02 22:56:00     IAGOS KIT/IMK-ASF            WMO CH4 X2004A  2020
+#> 118: 2020-03-02 22:56:20     IAGOS KIT/IMK-ASF            WMO CH4 X2004A  2020
+#> 119: 2020-03-02 22:56:40     IAGOS KIT/IMK-ASF            WMO CH4 X2004A  2020
+#>      month    day  hour minute second       time time_decimal       value
+#>      <int> <char> <int>  <int>  <int>      <num>        <num>       <num>
+#>   1:     1     08    22     59     40 1578524380     2020.022 1.90980e-06
+#>   2:     1     08    23      0      0 1578524400     2020.022 1.90885e-06
+#>   3:     1     08    23      0     20 1578524420     2020.022 1.90775e-06
+#>   4:     1     08    23      0     40 1578524440     2020.022 1.90815e-06
+#>   5:     1     08    23      1      0 1578524460     2020.022 1.90780e-06
+#>  ---                                                                     
+#> 115:     3     02    22     55     20 1583189720     2020.169 1.94435e-06
+#> 116:     3     02    22     55     40 1583189740     2020.169 1.94785e-06
+#> 117:     3     02    22     56      0 1583189760     2020.169 1.95025e-06
+#> 118:     3     02    22     56     20 1583189780     2020.169 1.95040e-06
+#> 119:     3     02    22     56     40 1583189800     2020.169 1.94940e-06
+#>      latitude longitude altitude_final elevation intake_height gps_altitude
+#>         <num>     <num>          <num>     <num>         <num>        <num>
+#>   1:  34.4790 -116.4090        7983.10       NaN           NaN          NaN
+#>   2:  34.4675 -116.4360        7907.00       NaN           NaN          NaN
+#>   3:  34.4525 -116.4720        7796.40       NaN           NaN          NaN
+#>   4:  34.4375 -116.5075        7615.25       NaN           NaN          NaN
+#>   5:  34.4225 -116.5430        7413.90       NaN           NaN          NaN
+#>  ---                                                                       
+#> 115:  33.9955 -118.2480        1113.10       NaN           NaN          NaN
+#> 116:  33.9935 -118.2705         983.70       NaN           NaN          NaN
+#> 117:  33.9915 -118.2925         855.05       NaN           NaN          NaN
+#> 118:  33.9895 -118.3145         753.00       NaN           NaN          NaN
+#> 119:  33.9875 -118.3340         648.10       NaN           NaN          NaN
+#>      pressure pressure_altitude           u         v temperature type_altitude
+#>         <num>             <num>       <num>     <num>       <num>         <num>
+#>   1:   481.30               NaN 20.82002449 -4.235882      257.65             1
+#>   2:   485.65               NaN 21.46781063 -3.550151      258.30             1
+#>   3:   491.60               NaN 22.83116627 -2.518281      259.05             1
+#>   4:   505.15               NaN 25.19994354 -1.720480      260.95             1
+#>   5:   517.75               NaN 26.27869606 -3.928331      262.50             1
+#>  ---                                                                           
+#> 115:   947.15               NaN  0.40699802 -4.795110      288.90             1
+#> 116:   961.05               NaN  0.16893618 -4.854677      290.10             1
+#> 117:   976.05               NaN  0.05610672 -6.043770      291.35             1
+#> 118:   978.35               NaN -0.99867356 -5.014345      291.60             1
+#> 119:   981.70               NaN -1.99368972 -5.770015      291.90             1
+#>               local_time    lh
+#>                   <POSc> <int>
+#>   1: 2020-01-08 15:14:01    15
+#>   2: 2020-01-08 15:14:15    15
+#>   3: 2020-01-08 15:14:26    15
+#>   4: 2020-01-08 15:14:38    15
+#>   5: 2020-01-08 15:14:49    15
+#>  ---                          
+#> 115: 2020-03-02 15:02:20    15
+#> 116: 2020-03-02 15:02:35    15
+#> 117: 2020-03-02 15:02:49    15
+#> 118: 2020-03-02 15:03:04    15
+#> 119: 2020-03-02 15:03:19    15
+```
+
+## Master
+
+Before generating the receptors list, we have the databe with all the required information
+
+```{r rename, eval = F}
+master <- df3
+
+```
+We may replace missing values with a nine nines. Here is commented
+
+#master[is.na(master)] <- 999999999
+
+We transform the time variables to character and round coordinates with 4 digits
+
+```{r round, eval = F}
+master$timeUTC <- as.character(master$timeUTC)
+master$local_time <- as.character(master$local_time)
+master$latitude <- round(master$latitude, 4)
+master$longitude <- round(master$longitude, 4)
+
+```
+
+## Save master
+Finally we save the master file
+
+```{r outfile, eval = F}
+out <- tempfile()
+
+```
+
+### txt
+
+```{r outtxt, eval = F}
+message(paste0(out,"_", datasetid, ".txt\n"))
+fwrite(master,
+       paste0(out,"_", datasetid, ".txt"),
+       sep = " ")
+
+```
+
+```
+#> C:\Users\sibarrae\AppData\Local\Temp\RtmpCmgiyH\file7abc7b936bd2_aircraft-insitu.txt
+```
+### csv
+
+```{r outcsv, eval = F}
+message(paste0(out,"_", datasetid, ".csv\n"))
+fwrite(master,
+       paste0(out,"_", datasetid, ".csv"),
+       sep = ",")
+
+```
+
+```
+#> C:\Users\sibarrae\AppData\Local\Temp\RtmpCmgiyH\file7abc7b936bd2_aircraft-insitu.csv
+```
+
+### csvy
+
+CSVY are csv files with a YAML header to include metadata in tabulated
+text files
+
+```{r csvy, eval = F}
+cat("\nAdding notes in csvy:\n")
+notes <- c(paste0("sector: ", datasetid),
+           paste0("timespan: ", yy),
+           paste0("spatial_limits: north = ", north, ", south = ", south, ", east = ", east, ", west = ", west),
+           "data: Data averaged every 20 seconds",
+           paste0("altitude: < ", max_altitude),
+           "hours: All",
+           "local_time: if var `site_utc2lst` is not available, calculated as",
+           "longitude/15*60*60 (John Miller)")
+
+cat(notes, sep = "\n")
+
+message(paste0(out,"_", datasetid, ".csvy\n"))
+obs_write_csvy(dt = master,
+               notes = notes,
+               out = paste0(out,"_", datasetid, ".csvy"))
+```
+
+```
+#> sector: aircraft-insitu
+#> timespan: 2020
+#> spatial_limits: north = 80, south = 10, east = -50, west = -170
+#> data: Data averaged every 20 seconds
+#> altitude: < 8000
+#> hours: All
+#> local_time: if var `site_utc2lst` is not available, calculated as
+#> longitude/15*60*60 (John Miller)
+#> C:\Users\sibarrae\AppData\Local\Temp\RtmpCmgiyH\file7abc7b936bd2_aircraft-insitu.csvy
+```
+
+```{r readcsvy, eval = F}
+obs_read_csvy(paste0(out,"_", datasetid, ".csvy"))
+```
+
+
+```
+#>  [1] "---"                                                               
+#>  [2] "name: Metadata "                                                   
+#>  [3] "sector: aircraft-insitu"                                           
+#>  [4] "timespan: 2020"                                                    
+#>  [5] "spatial_limits: north = 80, south = 10, east = -50, west = -170"   
+#>  [6] "data: Data averaged every 20 seconds"                              
+#>  [7] "altitude: < 8000"                                                  
+#>  [8] "hours: All"                                                        
+#>  [9] "local_time: if var `site_utc2lst` is not available, calculated as" 
+#> [10] "longitude/15*60*60 (John Miller)"                                  
+#> [11] "structure: "                                                       
+#> [12] "Classes 'data.table' and 'data.frame':\t119 obs. of  27 variables:"
+#> [13] " $ timeUTC                  : chr  \"2020-01-08 22:59:40\" \".."   
+#> [14] " $ site_code                : chr  \"IAGOS\" \"IAGOS\" ..."        
+#> [15] " $ lab_1_abbr               : chr  \"KIT/IMK-ASF\" \"KIT/IMK\".."  
+#> [16] " $ dataset_calibration_scale: chr  \"WMO CH4 X2004A\" \"WMO \".."  
+#> [17] " $ year                     : int  2020 2020 2020 2020 202.."      
+#> [18] " $ month                    : int  1 1 1 1 1 ..."                  
+#> [19] " $ day                      : chr  \"08\" \"08\" ..."              
+#> [20] " $ hour                     : int  22 23 23 23 23 ..."             
+#> [21] " $ minute                   : int  59 0 0 0 1 ..."                 
+#> [22] " $ second                   : int  40 0 20 40 0 ..."               
+#> [23] " $ time                     : num  1.58e+09 1.58e+09 ..."          
+#> [24] " $ time_decimal             : num  2020 2020 ..."                  
+#> [25] " $ value                    : num  1.91e-06 1.91e-06 ..."          
+#> [26] " $ latitude                 : num  34.5 34.5 ..."                  
+#> [27] " $ longitude                : num  -116 -116 ..."                  
+#> [28] " $ altitude_final           : num  7983 7907 ..."                  
+#> [29] " $ elevation                : num  NaN NaN NaN NaN NaN ..."        
+#> [30] " $ intake_height            : num  NaN NaN NaN NaN NaN ..."        
+#> [31] " $ gps_altitude             : num  NaN NaN NaN NaN NaN ..."        
+#> [32] " $ pressure                 : num  481 486 ..."                    
+#> [33] " $ pressure_altitude        : num  NaN NaN NaN NaN NaN ..."        
+#> [34] " $ u                        : num  20.8 21.5 ..."                  
+#> [35] " $ v                        : num  -4.24 -3.55 ..."                
+#> [36] " $ temperature              : num  258 258 ..."                    
+#> [37] " $ type_altitude            : num  1 1 1 1 1 ..."                  
+#> [38] " $ local_time               : chr  \"2020-01-08 15:14:01.8\".."    
+#> [39] " $ lh                       : int  15 15 15 15 15 ..."             
+#> [40] " - attr(*, \".internal.selfref\")=<externalptr> "                  
+#> [41] "NULL"                                                              
+#> [42] "---"
+#>                  timeUTC site_code  lab_1_abbr dataset_calibration_scale  year
+#>                   <POSc>    <char>      <char>                    <char> <int>
+#>   1: 2020-01-08 22:59:40     IAGOS KIT/IMK-ASF            WMO CH4 X2004A  2020
+#>   2: 2020-01-08 23:00:00     IAGOS KIT/IMK-ASF            WMO CH4 X2004A  2020
+#>   3: 2020-01-08 23:00:20     IAGOS KIT/IMK-ASF            WMO CH4 X2004A  2020
+#>   4: 2020-01-08 23:00:40     IAGOS KIT/IMK-ASF            WMO CH4 X2004A  2020
+#>   5: 2020-01-08 23:01:00     IAGOS KIT/IMK-ASF            WMO CH4 X2004A  2020
+#>  ---                                                                          
+#> 115: 2020-03-02 22:55:20     IAGOS KIT/IMK-ASF            WMO CH4 X2004A  2020
+#> 116: 2020-03-02 22:55:40     IAGOS KIT/IMK-ASF            WMO CH4 X2004A  2020
+#> 117: 2020-03-02 22:56:00     IAGOS KIT/IMK-ASF            WMO CH4 X2004A  2020
+#> 118: 2020-03-02 22:56:20     IAGOS KIT/IMK-ASF            WMO CH4 X2004A  2020
+#> 119: 2020-03-02 22:56:40     IAGOS KIT/IMK-ASF            WMO CH4 X2004A  2020
+#>      month   day  hour minute second       time time_decimal       value
+#>      <int> <int> <int>  <int>  <int>      <int>        <num>       <num>
+#>   1:     1     8    22     59     40 1578524380     2020.022 1.90980e-06
+#>   2:     1     8    23      0      0 1578524400     2020.022 1.90885e-06
+#>   3:     1     8    23      0     20 1578524420     2020.022 1.90775e-06
+#>   4:     1     8    23      0     40 1578524440     2020.022 1.90815e-06
+#>   5:     1     8    23      1      0 1578524460     2020.022 1.90780e-06
+#>  ---                                                                    
+#> 115:     3     2    22     55     20 1583189720     2020.169 1.94435e-06
+#> 116:     3     2    22     55     40 1583189740     2020.169 1.94785e-06
+#> 117:     3     2    22     56      0 1583189760     2020.169 1.95025e-06
+#> 118:     3     2    22     56     20 1583189780     2020.169 1.95040e-06
+#> 119:     3     2    22     56     40 1583189800     2020.169 1.94940e-06
+#>      latitude longitude altitude_final elevation intake_height gps_altitude
+#>         <num>     <num>          <num>    <lgcl>        <lgcl>       <lgcl>
+#>   1:  34.4790 -116.4090        7983.10        NA            NA           NA
+#>   2:  34.4675 -116.4360        7907.00        NA            NA           NA
+#>   3:  34.4525 -116.4720        7796.40        NA            NA           NA
+#>   4:  34.4375 -116.5075        7615.25        NA            NA           NA
+#>   5:  34.4225 -116.5430        7413.90        NA            NA           NA
+#>  ---                                                                       
+#> 115:  33.9955 -118.2480        1113.10        NA            NA           NA
+#> 116:  33.9935 -118.2705         983.70        NA            NA           NA
+#> 117:  33.9915 -118.2925         855.05        NA            NA           NA
+#> 118:  33.9895 -118.3145         753.00        NA            NA           NA
+#> 119:  33.9875 -118.3340         648.10        NA            NA           NA
+#>      pressure pressure_altitude           u         v temperature type_altitude
+#>         <num>            <lgcl>       <num>     <num>       <num>         <int>
+#>   1:   481.30                NA 20.82002449 -4.235882      257.65             1
+#>   2:   485.65                NA 21.46781063 -3.550151      258.30             1
+#>   3:   491.60                NA 22.83116627 -2.518281      259.05             1
+#>   4:   505.15                NA 25.19994354 -1.720480      260.95             1
+#>   5:   517.75                NA 26.27869606 -3.928331      262.50             1
+#>  ---                                                                           
+#> 115:   947.15                NA  0.40699802 -4.795110      288.90             1
+#> 116:   961.05                NA  0.16893618 -4.854677      290.10             1
+#> 117:   976.05                NA  0.05610672 -6.043770      291.35             1
+#> 118:   978.35                NA -0.99867356 -5.014345      291.60             1
+#> 119:   981.70                NA -1.99368972 -5.770015      291.90             1
+#>               local_time    lh
+#>                   <POSc> <int>
+#>   1: 2020-01-08 15:14:01    15
+#>   2: 2020-01-08 15:14:15    15
+#>   3: 2020-01-08 15:14:26    15
+#>   4: 2020-01-08 15:14:38    15
+#>   5: 2020-01-08 15:14:49    15
+#>  ---                          
+#> 115: 2020-03-02 15:02:20    15
+#> 116: 2020-03-02 15:02:35    15
+#> 117: 2020-03-02 15:02:49    15
+#> 118: 2020-03-02 15:03:04    15
+#> 119: 2020-03-02 15:03:19    15
+```
+
+## Receptors
+
+Now we can do the last step which is generating the receptor list files.
+Now we filter selected columns
+
+```{r receptors, eval = F}
+receptor <- master[, c("site_code",
+                       "year",
+                       "month",
+                       "day",
+                       "hour",
+                       "minute",
+                       "second",
+                       "latitude",
+                       "longitude",
+                       "altitude_final",
+                       "type_altitude")]
+
+```
+
+We can round altitude also
+
+```{r round_alt, eval = F}
+receptor$altitude_final <- round(receptor$altitude_final)
+```
+
+Now we can format time variables with two digits
+
+```{r formatrec, eval = F}
+receptor <- obs_format(receptor,
+                        spf =  c("month", "day",
+                                 "hour", "minute", "second"))
+```
+
+We have a column that indicate AGL or ASL
+
+```{r aslagl, eval = F}
+receptor_agl <- receptor[type_altitude == 0]
+receptor_asl <- receptor[type_altitude == 1]
+```
+
+Finally, we save the receptors
+
+```{r save_receptors, eval = F}
+if(nrow(receptor_agl) > 0) {
+  message(paste0(out, "_", datasetid, "_receptor_AGL.txt"), "\n")
+
+  fwrite(x = receptor_agl,
+         file = paste0(out, "_", datasetid, "_receptor_AGL.txt"),
+         sep = " ")
+}
+
+if(nrow(receptor_asl) > 0) {
+  message(paste0(out, "_", datasetid, "_receptor_ASL.txt"), "\n")
+
+  fwrite(x = receptor_asl,
+         file = paste0(out, "_", datasetid, "receptor_ASL.txt"),
+         sep = " ")
+
+}
+
+
+
+```
+
+```
+#> C:\Users\sibarrae\AppData\Local\Temp\RtmpCmgiyH\file7abc7b936bd2_aircraft-insitu_receptor_ASL.txt
+```
+
+## Plot
+
+Finally, we just plot some data, run it locally
+
+
+```{r obs_plotsave, fig.width=5, fig.height=3, eval = F, echo = F, message=F, warning=F}
+png("../man/figures/obsplot_aircraftinsitu.png", width = 1500, height = 1000, res = 200)
+obs_plot(df3, time = "timeUTC", yfactor = 1e9)
+dev.off()
+```
+
+```{r obs_plot, fig.width=5, fig.height=3, eval = F}
+obs_plot(df3, time = "timeUTC", yfactor = 1e9)
+```
+
+![Time Series](https://github.com/noaa-gml/rtorf/blob/main/man/figures/obsplot_aircraftinsitu.png?raw=true)
+
+
+```{r savesf, fig.width=5, fig.height=3, eval = F, echo = F}
+library(sf)
+x <- st_as_sf(df3, coords = c("longitude", "latitude"), crs = 4326)
+png("../man/figures/obsplot_aircraftinsitu_map.png", width = 1500, height = 1000, res = 200)
+plot(x["value"], axes = T, reset = F)
+maps::map(add = T)
+dev.off()
+```
+
+
+```{r sf, fig.width=5, fig.height=3, eval = F}
+library(sf)
+x <- st_as_sf(df3, coords = c("longitude", "latitude"), crs = 4326)
+plot(x["value"], axes = T, reset = F)
+maps::map(add = T)
+```
+
+![Map](https://github.com/noaa-gml/rtorf/blob/main/man/figures/obsplot_aircraftinsitu_map.png?raw=true)
+
+
+
+```{r vertplot, fig.width=5, fig.height=3, eval = F, echo = F, message=F, warning=F}
+x <- df3
+x$ch4 <- x$value*1e+9
+png("../man/figures/obsplot_aircraftinsitu_vert.png", width = 1500, height = 1000, res = 200)
+obs_plot(x, 
+         time = "ch4", 
+         y = "altitude_final", 
+         colu = "month", n = c(1L, 3L, 6L, 8L, 9L, 11L, 12L), 
+         type = "b", 
+         xlab = expression(CH[4]~ppb), 
+         ylab = "altitude (m)")
+dev.off()
+```
+
+```{r obs_plot_vertt, fig.width=7, fig.height=5, eval = F}
+x <- df3
+x$ch4 <- x$value*1e+9
+obs_plot(x, 
+         time = "ch4", 
+         y = "altitude_final", 
+         colu = "month", #n = c(1L, 3L, 6L, 8L, 9L, 11L, 12L), 
+         type = "b", 
+         xlab = expression(CH[4]~ppb), 
+         ylab = "altitude (m)")
+```
+
+
+![Vertical profiles](https://github.com/noaa-gml/rtorf/blob/main/man/figures/obsplot_aircraftinsitu_vert.png?raw=true)
+

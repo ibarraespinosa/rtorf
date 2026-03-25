@@ -1,0 +1,328 @@
+---
+title: "shipboard-insitu"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{shipboard-insitu}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(rtorf)
+library(data.table)
+```
+
+
+```{r read1, eval = F}
+
+cate = c("aircraft-pfp",
+         "aircraft-insitu",
+         "aircraft-flask",
+         "surface-insitu",
+         "surface-flask", 
+         "surface-pfp",   
+         "tower-insitu",  
+         "aircore",       
+         "shipboard-insitu",
+         "shipboard-flask") 
+
+obs <- "Z:/obspack/obspack_ch4_1_GLOBALVIEWplus_v5.1_2023-03-08/data/nc/"
+index <- obs_summary(obs = obs, 
+                     categories = cate)
+```
+
+```
+#> Number of files of index: 429
+#>               sector     N
+#>               <char> <int>
+#>  1:     aircraft-pfp    40
+#>  2:  aircraft-insitu    15
+#>  3:    surface-flask   106
+#>  4:   surface-insitu   174
+#>  5:   aircraft-flask     4
+#>  6:          aircore     1
+#>  7:      surface-pfp    33
+#>  8:     tower-insitu    51
+#>  9:  shipboard-flask     4
+#> 10: shipboard-insitu     1
+#> 11:    Total sectors   429
+#> Detected 190 files with agl
+#> Detected 239 files without agl
+```
+
+Now we read the `shipboard-insitu` using the function `obs_read_nc`. 
+`solar_time` is  included for surface, so we `TRUE` that argument.
+
+```{r readnc, eval = F}
+datasetid <- "shipboard-insitu"
+df <- obs_read_nc(index = index,
+                  categories = datasetid,
+                  solar_time = TRUE,
+                  verbose = TRUE)
+
+```
+
+```
+#> Searching shipboard-insitu...
+#> 1: ch4_rvrb_shipboard-insitu_1_allvalid.nc
+```
+
+Now we check the data
+
+```{r checkdf, eval = F}
+df
+```
+
+```
+#>         year month   day  hour minute second       time start_time
+#>        <int> <int> <int> <int>  <int>  <int>      <int>      <int>
+#>     1:  2019     3     2     1     19     37 1551489577 1551489577
+#>     2:  2019     3     2     1     20      3 1551489603 1551489603
+#>     3:  2019     3     2     1     21     38 1551489698 1551489698
+#>     4:  2019     3     2     1     49      9 1551491349 1551491349
+#>     5:  2019     3     2     2      3      7 1551492187 1551492187
+#>    ---                                                            
+#> 73230:  2019     3    30    16     20     21 1553962821 1553962821
+#> 73231:  2019     3    30    16     24     23 1553963063 1553963063
+#> 73232:  2019     3    30    16     24     57 1553963097 1553963097
+#> 73233:  2019     3    30    16     25     58 1553963158 1553963158
+#> 73234:  2019     3    30    16     26     24 1553963184 1553963184
+#>        midpoint_time             datetime time_decimal        value latitude
+#>                <int>               <char>        <num>        <num>    <num>
+#>     1:    1551489577 2019-03-02T01:19:37Z     2019.165 2.076981e-06  32.8521
+#>     2:    1551489603 2019-03-02T01:20:03Z     2019.165 2.077718e-06  32.8521
+#>     3:    1551489698 2019-03-02T01:21:38Z     2019.165 2.077695e-06  32.8521
+#>     4:    1551491349 2019-03-02T01:49:09Z     2019.165 2.071150e-06  32.8521
+#>     5:    1551492187 2019-03-02T02:03:07Z     2019.165 2.076558e-06  32.8522
+#>    ---                                                                      
+#> 73230:    1553962821 2019-03-30T16:20:21Z     2019.243 1.950464e-06  32.6589
+#> 73231:    1553963063 2019-03-30T16:24:23Z     2019.243 1.949703e-06  32.6660
+#> 73232:    1553963097 2019-03-30T16:24:57Z     2019.243 1.949468e-06  32.6669
+#> 73233:    1553963158 2019-03-30T16:25:58Z     2019.243 1.949421e-06  32.6686
+#> 73234:    1553963184 2019-03-30T16:26:24Z     2019.243 1.948835e-06  32.6694
+#>        longitude altitude elevation intake_height obs_flag obspack_num
+#>            <num>    <num>     <num>         <num>    <int>       <int>
+#>     1:  -79.9457       15         0            15        1     1844069
+#>     2:  -79.9457       15         0            15        1     1844070
+#>     3:  -79.9457       15         0            15        1     1844071
+#>     4:  -79.9457       15         0            15        1     1844072
+#>     5:  -79.9457       15         0            15        1     1844073
+#>    ---                                                                
+#> 73230:  -79.6765       15         0            15        1     1917298
+#> 73231:  -79.6907       15         0            15        1     1917299
+#> 73232:  -79.6925       15         0            15        1     1917300
+#> 73233:  -79.6961       15         0            15        1     1917301
+#> 73234:  -79.6978       15         0            15        1     1917302
+#>                                                                                       obspack_id
+#>                                                                                           <char>
+#>     1: obspack_ch4_1_GLOBALVIEWplus_v5.1_2023-03-08~ch4_rvrb_shipboard-insitu_1_allvalid~1844069
+#>     2: obspack_ch4_1_GLOBALVIEWplus_v5.1_2023-03-08~ch4_rvrb_shipboard-insitu_1_allvalid~1844070
+#>     3: obspack_ch4_1_GLOBALVIEWplus_v5.1_2023-03-08~ch4_rvrb_shipboard-insitu_1_allvalid~1844071
+#>     4: obspack_ch4_1_GLOBALVIEWplus_v5.1_2023-03-08~ch4_rvrb_shipboard-insitu_1_allvalid~1844072
+#>     5: obspack_ch4_1_GLOBALVIEWplus_v5.1_2023-03-08~ch4_rvrb_shipboard-insitu_1_allvalid~1844073
+#>    ---                                                                                          
+#> 73230: obspack_ch4_1_GLOBALVIEWplus_v5.1_2023-03-08~ch4_rvrb_shipboard-insitu_1_allvalid~1917298
+#> 73231: obspack_ch4_1_GLOBALVIEWplus_v5.1_2023-03-08~ch4_rvrb_shipboard-insitu_1_allvalid~1917299
+#> 73232: obspack_ch4_1_GLOBALVIEWplus_v5.1_2023-03-08~ch4_rvrb_shipboard-insitu_1_allvalid~1917300
+#> 73233: obspack_ch4_1_GLOBALVIEWplus_v5.1_2023-03-08~ch4_rvrb_shipboard-insitu_1_allvalid~1917301
+#> 73234: obspack_ch4_1_GLOBALVIEWplus_v5.1_2023-03-08~ch4_rvrb_shipboard-insitu_1_allvalid~1917302
+#>        unique_sample_location_num year_st month_st day_st hour_st minute_st
+#>                             <int>   <int>    <int>  <int>   <int>     <int>
+#>     1:                   46806290    2019        3      1      19        47
+#>     2:                   46806291    2019        3      1      19        47
+#>     3:                   46806292    2019        3      1      19        49
+#>     4:                   46806293    2019        3      1      20        16
+#>     5:                   44831881    2019        3      1      20        30
+#>    ---                                                                     
+#> 73230:                   46806283    2019        3     30      10        56
+#> 73231:                   46806284    2019        3     30      11         0
+#> 73232:                   46806285    2019        3     30      11         1
+#> 73233:                   46806286    2019        3     30      11         2
+#> 73234:                   46806287    2019        3     30      11         2
+#>        second_st          scale site_elevation_unit  dataset_project
+#>            <int>         <char>              <char>           <char>
+#>     1:        18 WMO CH4 X2004A                masl shipboard-insitu
+#>     2:        44 WMO CH4 X2004A                masl shipboard-insitu
+#>     3:        19 WMO CH4 X2004A                masl shipboard-insitu
+#>     4:        50 WMO CH4 X2004A                masl shipboard-insitu
+#>     5:        48 WMO CH4 X2004A                masl shipboard-insitu
+#>    ---                                                              
+#> 73230:        57 WMO CH4 X2004A                masl shipboard-insitu
+#> 73231:        55 WMO CH4 X2004A                masl shipboard-insitu
+#> 73232:        29 WMO CH4 X2004A                masl shipboard-insitu
+#> 73233:        29 WMO CH4 X2004A                masl shipboard-insitu
+#> 73234:        55 WMO CH4 X2004A                masl shipboard-insitu
+#>        dataset_selection_tag     site_name site_elevation site_latitude
+#>                       <char>        <char>          <num>         <num>
+#>     1:              allvalid R/V Ron Brown              0        -1e+34
+#>     2:              allvalid R/V Ron Brown              0        -1e+34
+#>     3:              allvalid R/V Ron Brown              0        -1e+34
+#>     4:              allvalid R/V Ron Brown              0        -1e+34
+#>     5:              allvalid R/V Ron Brown              0        -1e+34
+#>    ---                                                                 
+#> 73230:              allvalid R/V Ron Brown              0        -1e+34
+#> 73231:              allvalid R/V Ron Brown              0        -1e+34
+#> 73232:              allvalid R/V Ron Brown              0        -1e+34
+#> 73233:              allvalid R/V Ron Brown              0        -1e+34
+#> 73234:              allvalid R/V Ron Brown              0        -1e+34
+#>        site_longitude site_code lab_1_abbr dataset_calibration_scale
+#>                 <num>    <char>     <char>                    <char>
+#>     1:         -1e+34      RVRB       NOAA            WMO CH4 X2004A
+#>     2:         -1e+34      RVRB       NOAA            WMO CH4 X2004A
+#>     3:         -1e+34      RVRB       NOAA            WMO CH4 X2004A
+#>     4:         -1e+34      RVRB       NOAA            WMO CH4 X2004A
+#>     5:         -1e+34      RVRB       NOAA            WMO CH4 X2004A
+#>    ---                                                              
+#> 73230:         -1e+34      RVRB       NOAA            WMO CH4 X2004A
+#> 73231:         -1e+34      RVRB       NOAA            WMO CH4 X2004A
+#> 73232:         -1e+34      RVRB       NOAA            WMO CH4 X2004A
+#> 73233:         -1e+34      RVRB       NOAA            WMO CH4 X2004A
+#> 73234:         -1e+34      RVRB       NOAA            WMO CH4 X2004A
+#>        altitude_final type_altitude
+#>                 <num>        <lgcl>
+#>     1:             15            NA
+#>     2:             15            NA
+#>     3:             15            NA
+#>     4:             15            NA
+#>     5:             15            NA
+#>    ---                             
+#> 73230:             15            NA
+#> 73231:             15            NA
+#> 73232:             15            NA
+#> 73233:             15            NA
+#> 73234:             15            NA
+```
+
+Now we can process the data. We first filter for observations
+within our spatial domain:
+
+## Checks and definitions
+
+```{r spatial, eval = F}
+north <- 80
+south <- 10
+west <- -170
+east <- -50
+max_altitude <- 8000
+yy <- 2020
+evening <- 14
+
+```
+
+We check altitude, intake_height, altitude_final and elevation.
+altitude_final is a column from intake_height, added to match
+column from obs_read text files.
+
+```{r checkcols, eval = F}
+df[, c("altitude", "altitude_final", "intake_height", "elevation",
+       "dataset_selection_tag",
+              "site_name")]
+```
+
+```
+#>        altitude altitude_final intake_height elevation dataset_selection_tag
+#>           <num>          <num>         <num>     <num>                <char>
+#>     1:       15             15            15         0              allvalid
+#>     2:       15             15            15         0              allvalid
+#>     3:       15             15            15         0              allvalid
+#>     4:       15             15            15         0              allvalid
+#>     5:       15             15            15         0              allvalid
+#>    ---                                                                      
+#> 73230:       15             15            15         0              allvalid
+#> 73231:       15             15            15         0              allvalid
+#> 73232:       15             15            15         0              allvalid
+#> 73233:       15             15            15         0              allvalid
+#> 73234:       15             15            15         0              allvalid
+#>            site_name
+#>               <char>
+#>     1: R/V Ron Brown
+#>     2: R/V Ron Brown
+#>     3: R/V Ron Brown
+#>     4: R/V Ron Brown
+#>     5: R/V Ron Brown
+#>    ---              
+#> 73230: R/V Ron Brown
+#> 73231: R/V Ron Brown
+#> 73232: R/V Ron Brown
+#> 73233: R/V Ron Brown
+#> 73234: R/V Ron Brown
+```
+The temporal range of data is
+```{r range_year, eval = F}
+range(df$year)
+```
+
+```
+#> [1] 2019 2019
+```
+
+We also check for dimensions of data
+
+```{r dim_df, eval = F}
+dim(df)
+```
+
+```
+#> [1] 73234    40
+```
+
+## Plot
+
+Finally, we just plot some data, run it locally
+
+
+```{r obs_plotsave, fig.width=5, fig.height=3, eval = F, echo = F, message=F, warning=F}
+png("../man/figures/obsplot_shipboardinsitu.png", width = 1500, height = 1000, res = 200)
+obs_plot(df, time = "timeUTC", yfactor = 1e9)
+dev.off()
+```
+
+```{r obs_plot, fig.width=5, fig.height=3, eval = F}
+obs_plot(df4, time = "timeUTC", yfactor = 1e9)
+```
+```
+#> Found the following sites: 
+#> [1] RVRB
+#> Plotting the following sites: 
+#> [1] RVRB
+#> png 
+#>   2
+```
+![Time series](https://github.com/noaa-gml/rtorf/blob/main/man/figures/obsplot_shipboardinsitu.png?raw=true)
+
+
+```{r savesf, fig.width=5, fig.height=3, eval = F, echo = F}
+library(sf)
+dx <- df[, 
+    lapply(.SD, mean),
+    .SDcols = "value",
+    by = .(latitude, longitude)]
+x <- st_as_sf(dx, coords = c("longitude", "latitude"), crs = 4326)
+png("../man/figures/obsplot_shipboardinsitu_map.png", width = 1500, height = 1000, res = 200)
+plot(x["value"], axes = T, reset = F)
+maps::map(add = T)
+dev.off()
+```
+
+
+```{r sf, fig.width=5, fig.height=3, eval = F}
+library(sf)
+dx <- df[, 
+    lapply(.SD, mean),
+    .SDcols = "value",
+    by = .(latitude, longitude)]
+x <- st_as_sf(dx, coords = c("longitude", "latitude"), crs = 4326)
+plot(x["value"], axes = T, reset = F)
+maps::map(add = T)
+```
+
+![Map](https://github.com/noaa-gml/rtorf/blob/main/man/figures/obsplot_shipboardinsitu_map.png?raw=true)

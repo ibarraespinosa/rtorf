@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>shipboard-flask</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">shipboard-flask</h1>
+
+
+
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(rtorf)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(data.table)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>cate <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&quot;aircraft-pfp&quot;</span>,</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>         <span class="st">&quot;aircraft-insitu&quot;</span>,</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>         <span class="st">&quot;aircraft-flask&quot;</span>,</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>         <span class="st">&quot;surface-insitu&quot;</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>         <span class="st">&quot;surface-flask&quot;</span>, </span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>         <span class="st">&quot;surface-pfp&quot;</span>,   </span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>         <span class="st">&quot;tower-insitu&quot;</span>,  </span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>         <span class="st">&quot;aircore&quot;</span>,       </span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>         <span class="st">&quot;shipboard-insitu&quot;</span>,</span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>         <span class="st">&quot;shipboard-flask&quot;</span>) </span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a></span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>obs <span class="ot">&lt;-</span> <span class="st">&quot;Z:/obspack/obspack_ch4_1_GLOBALVIEWplus_v5.1_2023-03-08/data/nc/&quot;</span></span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a>index <span class="ot">&lt;-</span> <span class="fu">obs_summary</span>(<span class="at">obs =</span> obs, </span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a>                     <span class="at">categories =</span> cate)</span></code></pre></div>
+<pre><code>#&gt; Number of files of index: 429
+#&gt;               sector     N
+#&gt;               &lt;char&gt; &lt;int&gt;
+#&gt;  1:     aircraft-pfp    40
+#&gt;  2:  aircraft-insitu    15
+#&gt;  3:    surface-flask   106
+#&gt;  4:   surface-insitu   174
+#&gt;  5:   aircraft-flask     4
+#&gt;  6:          aircore     1
+#&gt;  7:      surface-pfp    33
+#&gt;  8:     tower-insitu    51
+#&gt;  9:  shipboard-flask     4
+#&gt; 10: shipboard-insitu     1
+#&gt; 11:    Total sectors   429
+#&gt; Detected 190 files with agl
+#&gt; Detected 239 files without agl</code></pre>
+<p>Now we read the <code>shipboard-flask</code> using the function
+<code>obs_read_nc</code>. <code>solar_time</code> is included for
+surface, so we <code>TRUE</code> that argument.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>datasetid <span class="ot">&lt;-</span> <span class="st">&quot;surface-flask&quot;</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">obs_read_nc</span>(<span class="at">index =</span> index,</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>                  <span class="at">categories =</span> datasetid,</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>                  <span class="at">solar_time =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>                  <span class="at">verbose =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<pre><code>#&gt; Searching shipboard-flask...
+#&gt; 1: ch4_drp_shipboard-flask_1_representative.nc
+#&gt; 2: ch4_poc_shipboard-flask_1_representative.nc
+#&gt; 3: ch4_scs_shipboard-flask_1_representative.nc
+#&gt; 4: ch4_wpc_shipboard-flask_1_representative.nc</code></pre>
+<p>Now we check the data</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>df</span></code></pre></div>
+<pre><code>#&gt;        year month   day  hour minute second       time start_time midpoint_time
+#&gt;       &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;  &lt;int&gt;  &lt;int&gt;      &lt;int&gt;      &lt;int&gt;         &lt;int&gt;
+#&gt;    1:  2006     3    22    20     40      0 1143060000 1143060000    1143060000
+#&gt;    2:  2006     3    23    13      0      0 1143118800 1143118800    1143118800
+#&gt;    3:  2006     3    24     8     10      0 1143187800 1143187800    1143187800
+#&gt;    4:  2006     3    25    12     10      0 1143288600 1143288600    1143288600
+#&gt;    5:  2006     3    25    17     54      0 1143309240 1143309240    1143309240
+#&gt;   ---                                                                          
+#&gt; 8721:  2013     5    30    14     46      0 1369925160 1369925160    1369925160
+#&gt; 8722:  2013     5    31     0     14      0 1369959240 1369959240    1369959240
+#&gt; 8723:  2013     5    31    10      8      0 1369994880 1369994880    1369994880
+#&gt; 8724:  2013     6     1     4      2      0 1370059320 1370059320    1370059320
+#&gt; 8725:  2013     6     1    23     26      0 1370129160 1370129160    1370129160
+#&gt;                   datetime time_decimal time_interval        value value_unc
+#&gt;                     &lt;char&gt;        &lt;num&gt;         &lt;int&gt;        &lt;num&gt;     &lt;num&gt;
+#&gt;    1: 2006-03-22T20:40:00Z     2006.222          3600 1.724095e-06  2.05e-09
+#&gt;    2: 2006-03-23T13:00:00Z     2006.223          3600 1.711290e-06  2.05e-09
+#&gt;    3: 2006-03-24T08:10:00Z     2006.226          3600 1.711190e-06  2.05e-09
+#&gt;    4: 2006-03-25T12:10:00Z     2006.229          3600 1.709910e-06  2.05e-09
+#&gt;    5: 2006-03-25T17:54:00Z     2006.229          3600 1.710660e-06  2.05e-09
+#&gt;   ---                                                                       
+#&gt; 8721: 2013-05-30T14:46:00Z     2013.410          3600 1.803340e-06  9.10e-10
+#&gt; 8722: 2013-05-31T00:14:00Z     2013.411          3600 1.809640e-06  9.10e-10
+#&gt; 8723: 2013-05-31T10:08:00Z     2013.412          3600 1.846435e-06  9.10e-10
+#&gt; 8724: 2013-06-01T04:02:00Z     2013.414          3600 1.862995e-06  9.10e-10
+#&gt; 8725: 2013-06-01T23:26:00Z     2013.416          3600 1.865480e-06  9.10e-10
+#&gt;       nvalue value_std_dev latitude longitude altitude elevation intake_height
+#&gt;        &lt;int&gt;         &lt;num&gt;    &lt;num&gt;     &lt;num&gt;    &lt;num&gt;     &lt;num&gt;         &lt;num&gt;
+#&gt;    1:      2  1.251579e-09   -55.00    -64.91       10         0            10
+#&gt;    2:      2  1.612203e-09   -56.06    -64.60       10         0            10
+#&gt;    3:      2  1.979899e-09   -57.11    -64.25       10         0            10
+#&gt;    4:      2  3.917372e-09   -57.83    -64.01       10         0            10
+#&gt;    5:      2  1.103087e-09   -58.20    -63.88       10         0            10
+#&gt;   ---                                                                         
+#&gt; 8721:      2  2.404163e-10    15.01    144.52       10         0            10
+#&gt; 8722:      2  2.404163e-10    17.53    143.31       10         0            10
+#&gt; 8723:      2  4.030509e-10    20.09    142.05       10         0            10
+#&gt; 8724:      2  1.343503e-10    25.00    139.59       10         0            10
+#&gt; 8725:      2  9.333809e-10    30.11    136.91       10         0            10
+#&gt;       qcflag instrument   analysis_datetime method event_number
+#&gt;       &lt;char&gt;     &lt;char&gt;              &lt;char&gt; &lt;char&gt;       &lt;char&gt;
+#&gt;    1:    ...         H4 2006-04-20T11:00:00      N       215659
+#&gt;    2:    ...         H4 2006-04-20T13:10:00      N       215648
+#&gt;    3:    ...         H4 2006-04-20T14:50:00      N       215645
+#&gt;    4:    ...         H4 2006-04-20T15:19:00      N       215643
+#&gt;    5:    ...         H4 2006-04-20T12:27:00      N       215657
+#&gt;   ---                                                          
+#&gt; 8721:    ...        H11 2013-07-31T11:21:00      G       354983
+#&gt; 8722:    ...        H11 2013-07-30T10:12:00      G       354993
+#&gt; 8723:    ...        H11 2013-07-30T09:40:00      G       354995
+#&gt; 8724:    ...        H11 2013-07-30T09:24:00      G       354990
+#&gt; 8725:    ...        H11 2013-07-29T16:34:00      G       354992
+#&gt;       air_sample_container_id obs_flag obspack_num
+#&gt;                        &lt;char&gt;    &lt;int&gt;       &lt;int&gt;
+#&gt;    1:                 4114-99        1     1059927
+#&gt;    2:                 3943-99        1     1059928
+#&gt;    3:                 3356-99        1     1059929
+#&gt;    4:                 2962-99        1     1059930
+#&gt;    5:                 1248-99        1     1059931
+#&gt;   ---                                             
+#&gt; 8721:                 2783-99        1     1130189
+#&gt; 8722:                 1042-99        1     1130190
+#&gt; 8723:                 4167-99        1     1130191
+#&gt; 8724:                 3595-99        1     1130192
+#&gt; 8725:                 4080-99        1     1130193
+#&gt;                                                                                          obspack_id
+#&gt;                                                                                              &lt;char&gt;
+#&gt;    1: obspack_ch4_1_GLOBALVIEWplus_v5.1_2023-03-08~ch4_drp_shipboard-flask_1_representative~1059927
+#&gt;    2: obspack_ch4_1_GLOBALVIEWplus_v5.1_2023-03-08~ch4_drp_shipboard-flask_1_representative~1059928
+#&gt;    3: obspack_ch4_1_GLOBALVIEWplus_v5.1_2023-03-08~ch4_drp_shipboard-flask_1_representative~1059929
+#&gt;    4: obspack_ch4_1_GLOBALVIEWplus_v5.1_2023-03-08~ch4_drp_shipboard-flask_1_representative~1059930
+#&gt;    5: obspack_ch4_1_GLOBALVIEWplus_v5.1_2023-03-08~ch4_drp_shipboard-flask_1_representative~1059931
+#&gt;   ---                                                                                              
+#&gt; 8721: obspack_ch4_1_GLOBALVIEWplus_v5.1_2023-03-08~ch4_wpc_shipboard-flask_1_representative~1130189
+#&gt; 8722: obspack_ch4_1_GLOBALVIEWplus_v5.1_2023-03-08~ch4_wpc_shipboard-flask_1_representative~1130190
+#&gt; 8723: obspack_ch4_1_GLOBALVIEWplus_v5.1_2023-03-08~ch4_wpc_shipboard-flask_1_representative~1130191
+#&gt; 8724: obspack_ch4_1_GLOBALVIEWplus_v5.1_2023-03-08~ch4_wpc_shipboard-flask_1_representative~1130192
+#&gt; 8725: obspack_ch4_1_GLOBALVIEWplus_v5.1_2023-03-08~ch4_wpc_shipboard-flask_1_representative~1130193
+#&gt;       unique_sample_location_num year_st month_st day_st hour_st minute_st
+#&gt;                            &lt;int&gt;   &lt;int&gt;    &lt;int&gt;  &lt;int&gt;   &lt;int&gt;     &lt;int&gt;
+#&gt;    1:                    1047155    2006        3     22      16        13
+#&gt;    2:                    1047150    2006        3     23       8        34
+#&gt;    3:                    1047146    2006        3     24       3        46
+#&gt;    4:                    1047142    2006        3     25       7        47
+#&gt;    5:                    1047139    2006        3     25      13        32
+#&gt;   ---                                                                     
+#&gt; 8721:                   22039456    2013        5     31       0        26
+#&gt; 8722:                   22039471    2013        5     31       9        49
+#&gt; 8723:                   22039489    2013        5     31      19        38
+#&gt; 8724:                   22039499    2013        6      1      13        22
+#&gt; 8725:                   22039524    2013        6      2       8        36
+#&gt;       second_st          scale site_elevation_unit dataset_project
+#&gt;           &lt;int&gt;         &lt;char&gt;              &lt;char&gt;          &lt;char&gt;
+#&gt;    1:         7 WMO CH4 X2004A                masl shipboard-flask
+#&gt;    2:        41 WMO CH4 X2004A                masl shipboard-flask
+#&gt;    3:        24 WMO CH4 X2004A                masl shipboard-flask
+#&gt;    4:        40 WMO CH4 X2004A                masl shipboard-flask
+#&gt;    5:        11 WMO CH4 X2004A                masl shipboard-flask
+#&gt;   ---                                                             
+#&gt; 8721:        48 WMO CH4 X2004A                masl shipboard-flask
+#&gt; 8722:        48 WMO CH4 X2004A                masl shipboard-flask
+#&gt; 8723:        46 WMO CH4 X2004A                masl shipboard-flask
+#&gt; 8724:        47 WMO CH4 X2004A                masl shipboard-flask
+#&gt; 8725:         3 WMO CH4 X2004A                masl shipboard-flask
+#&gt;       dataset_selection_tag              site_name site_elevation site_latitude
+#&gt;                      &lt;char&gt;                 &lt;char&gt;          &lt;num&gt;         &lt;num&gt;
+#&gt;    1:        representative          Drake Passage              0      -5.9e+01
+#&gt;    2:        representative          Drake Passage              0      -5.9e+01
+#&gt;    3:        representative          Drake Passage              0      -5.9e+01
+#&gt;    4:        representative          Drake Passage              0      -5.9e+01
+#&gt;    5:        representative          Drake Passage              0      -5.9e+01
+#&gt;   ---                                                                          
+#&gt; 8721:        representative Western Pacific Cruise              0      -1.0e+34
+#&gt; 8722:        representative Western Pacific Cruise              0      -1.0e+34
+#&gt; 8723:        representative Western Pacific Cruise              0      -1.0e+34
+#&gt; 8724:        representative Western Pacific Cruise              0      -1.0e+34
+#&gt; 8725:        representative Western Pacific Cruise              0      -1.0e+34
+#&gt;       site_longitude site_country site_code site_utc2lst lab_1_abbr
+#&gt;                &lt;num&gt;       &lt;char&gt;    &lt;char&gt;        &lt;num&gt;     &lt;char&gt;
+#&gt;    1:     -6.469e+01          N/A       DRP           -4       NOAA
+#&gt;    2:     -6.469e+01          N/A       DRP           -4       NOAA
+#&gt;    3:     -6.469e+01          N/A       DRP           -4       NOAA
+#&gt;    4:     -6.469e+01          N/A       DRP           -4       NOAA
+#&gt;    5:     -6.469e+01          N/A       DRP           -4       NOAA
+#&gt;   ---                                                              
+#&gt; 8721:     -1.000e+34          N/A       WPC           NA       NOAA
+#&gt; 8722:     -1.000e+34          N/A       WPC           NA       NOAA
+#&gt; 8723:     -1.000e+34          N/A       WPC           NA       NOAA
+#&gt; 8724:     -1.000e+34          N/A       WPC           NA       NOAA
+#&gt; 8725:     -1.000e+34          N/A       WPC           NA       NOAA
+#&gt;       dataset_calibration_scale altitude_final type_altitude
+#&gt;                          &lt;char&gt;          &lt;num&gt;        &lt;lgcl&gt;
+#&gt;    1:            WMO CH4 X2004A             10            NA
+#&gt;    2:            WMO CH4 X2004A             10            NA
+#&gt;    3:            WMO CH4 X2004A             10            NA
+#&gt;    4:            WMO CH4 X2004A             10            NA
+#&gt;    5:            WMO CH4 X2004A             10            NA
+#&gt;   ---                                                       
+#&gt; 8721:            WMO CH4 X2004A             10            NA
+#&gt; 8722:            WMO CH4 X2004A             10            NA
+#&gt; 8723:            WMO CH4 X2004A             10            NA
+#&gt; 8724:            WMO CH4 X2004A             10            NA
+#&gt; 8725:            WMO CH4 X2004A             10            NA</code></pre>
+<p>Now we can process the data. We first filter for observations within
+our spatial domain:</p>
+<div id="checks-and-definitions" class="section level2">
+<h2>Checks and definitions</h2>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>yy <span class="ot">&lt;-</span> <span class="dv">2020</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>evening <span class="ot">&lt;-</span> <span class="dv">14</span></span></code></pre></div>
+<p>We check altitude, intake_height, altitude_final and elevation.
+altitude_final is a column from intake_height, added to match column
+from obs_read text files.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>df[, <span class="fu">c</span>(<span class="st">&quot;altitude&quot;</span>, <span class="st">&quot;altitude_final&quot;</span>, <span class="st">&quot;intake_height&quot;</span>, <span class="st">&quot;elevation&quot;</span>,</span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>       <span class="st">&quot;dataset_selection_tag&quot;</span>,</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>              <span class="st">&quot;site_name&quot;</span>)]</span></code></pre></div>
+<pre><code>#&gt;       altitude altitude_final intake_height elevation dataset_selection_tag
+#&gt;          &lt;num&gt;          &lt;num&gt;         &lt;num&gt;     &lt;num&gt;                &lt;char&gt;
+#&gt;    1:       10             10            10         0        representative
+#&gt;    2:       10             10            10         0        representative
+#&gt;    3:       10             10            10         0        representative
+#&gt;    4:       10             10            10         0        representative
+#&gt;    5:       10             10            10         0        representative
+#&gt;   ---                                                                      
+#&gt; 8721:       10             10            10         0        representative
+#&gt; 8722:       10             10            10         0        representative
+#&gt; 8723:       10             10            10         0        representative
+#&gt; 8724:       10             10            10         0        representative
+#&gt; 8725:       10             10            10         0        representative
+#&gt;                    site_name
+#&gt;                       &lt;char&gt;
+#&gt;    1:          Drake Passage
+#&gt;    2:          Drake Passage
+#&gt;    3:          Drake Passage
+#&gt;    4:          Drake Passage
+#&gt;    5:          Drake Passage
+#&gt;   ---                       
+#&gt; 8721: Western Pacific Cruise
+#&gt; 8722: Western Pacific Cruise
+#&gt; 8723: Western Pacific Cruise
+#&gt; 8724: Western Pacific Cruise
+#&gt; 8725: Western Pacific Cruise</code></pre>
+<p>The temporal range of data is</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="fu">range</span>(df<span class="sc">$</span>year)</span></code></pre></div>
+<pre><code>#&gt; [1] 1986 2021</code></pre>
+<p>We also check for dimensions of data</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="fu">dim</span>(df)</span></code></pre></div>
+<pre><code>#&gt; [1] 8725   52</code></pre>
+</div>
+<div id="filters" class="section level2">
+<h2>Filters</h2>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a>df <span class="ot">&lt;-</span> df[year <span class="sc">==</span> yy]</span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a><span class="fu">dim</span>(df)</span></code></pre></div>
+<pre><code>#&gt; [1]  8 52</code></pre>
+<p>Towers can have observations at different heights. Here we need to
+select one site with the observations registered at the highest height.
+The column with the height is named <code>altitude_final</code> and the
+max altitude was named <code>max_altitude</code>.</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a>dfa <span class="ot">&lt;-</span> df[,</span>
+<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a>          <span class="fu">max</span>(altitude_final),</span>
+<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a>          by <span class="ot">=</span> site_code] <span class="sc">|&gt;</span> <span class="fu">unique</span>()</span>
+<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a></span>
+<span id="cb17-5"><a href="#cb17-5" tabindex="-1"></a><span class="fu">names</span>(dfa)[<span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="st">&quot;max_altitude&quot;</span></span>
+<span id="cb17-6"><a href="#cb17-6" tabindex="-1"></a>dfa</span></code></pre></div>
+<pre><code>#&gt;    site_code max_altitude
+#&gt;       &lt;char&gt;        &lt;num&gt;
+#&gt; 1:       DRP           10</code></pre>
+<div id="key-time" class="section level3">
+<h3>Key Time</h3>
+<p>Here we need to start time columns. The function
+<code>obs_addtime</code> adds time columns <code>timeUTC</code>,
+<code>timeUTC_start</code> which shows the start time of each
+observation and <code>timeUTC_end</code> which shows the end time for
+each observation.</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a>df2 <span class="ot">&lt;-</span> <span class="fu">obs_addtime</span>(df)</span></code></pre></div>
+<pre><code>#&gt; Adding timeUTC
+#&gt; Adding timeUTC_start
+#&gt; Adding timeUTC_end
+#&gt; Found time_interval</code></pre>
+<p>Then we need a <em>key_time</em> to aggregate data. This can be done
+using UTC, solar, or local time. The normal approach is using afternoon
+solar or local time.</p>
+<div id="hierarchy-of-solar-or-local-time" class="section level4">
+<h4>Hierarchy of solar or local time</h4>
+<ol style="list-style-type: decimal">
+<li>Solar time</li>
+<li>Local time with columns <code>site_utc2lst</code></li>
+<li>Local time longitude</li>
+</ol>
+<blockquote>
+<p>solar time (default)</p>
+</blockquote>
+<p>Here we select the hours of interest and then aggregate data by year,
+month and day of solar time. In this way, we will have one information
+per day. however this approach is not appropriate for aircraft which are
+aggregated every 10 or 20 seconds. Hence we need to aggregate data by
+one time column. Also, this helps to generate the receptor info files
+including hour, minute and second. Hence, <em>we need to add solar or
+local time column</em>.</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a>df2<span class="sc">$</span>solar_time <span class="ot">&lt;-</span> <span class="fu">obs_addstime</span>(df2)</span></code></pre></div>
+<blockquote>
+<p>local time with column <code>site_utc2lst</code></p>
+</blockquote>
+<p>Then we need to identify the local time with the function
+<code>add_ltime</code>. This is important because to identifying
+observations in the evening in local time. <code>add_ltime</code> uses
+two methods, first identify the time difference with utc by identifying
+the metadata column “site_utc2lst”. If solar time is not available #now
+we need to cut solar time for the frequency needed. As we will work
+with</p>
+<blockquote>
+<p>local time longitude</p>
+</blockquote>
+<p>If this information is not available, with the aircrafts for
+instance, the local time is calculated with an approximation based on
+longitude:</p>
+<p><span class="math display">\[
+lt = UTC + longitude/15 * 60 * 60
+\]</span> Where <span class="math inline">\(lt\)</span> is the local
+time, <span class="math inline">\(UTC\)</span> the time, <span class="math inline">\(longitude\)</span> the coordinate. Then, the time
+is cut every two hours. Now, we identify the local time to select
+evening hours.</p>
+</div>
+<div id="cut-time" class="section level4">
+<h4>Cut time</h4>
+<p>Now we have they key column time, we can cut it accordingly.</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" tabindex="-1"></a>df2<span class="sc">$</span>solar_time_cut <span class="ot">&lt;-</span> <span class="fu">cut</span>(<span class="at">x =</span> df2<span class="sc">$</span>solar_time,</span>
+<span id="cb22-2"><a href="#cb22-2" tabindex="-1"></a>                          <span class="at">breaks =</span> <span class="st">&quot;1 hour&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb22-3"><a href="#cb22-3" tabindex="-1"></a>  <span class="fu">as.character</span>()</span></code></pre></div>
+<p>How we can check the solar time and the cut solar time. Please note
+that solar_time_cut, the column that it will be used to aggregate
+data</p>
+<p>How we filter for the required solar time, in this case 14.</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a>df3 <span class="ot">&lt;-</span> df2</span>
+<span id="cb23-2"><a href="#cb23-2" tabindex="-1"></a>df3[, <span class="fu">c</span>(<span class="st">&quot;solar_time&quot;</span>, <span class="st">&quot;solar_time_cut&quot;</span>)]</span></code></pre></div>
+<pre><code>#&gt;             solar_time      solar_time_cut
+#&gt;                 &lt;POSc&gt;              &lt;char&gt;
+#&gt; 1: 2020-01-01 15:15:55 2020-01-01 15:00:00
+#&gt; 2: 2020-02-09 20:49:04 2020-02-09 20:00:00
+#&gt; 3: 2020-02-18 22:09:41 2020-02-18 22:00:00
+#&gt; 4: 2020-03-18 15:56:42 2020-03-18 15:00:00
+#&gt; 5: 2020-06-07 17:50:25 2020-06-07 17:00:00
+#&gt; 6: 2020-06-19 03:58:54 2020-06-19 03:00:00
+#&gt; 7: 2020-12-01 07:08:23 2020-12-01 07:00:00
+#&gt; 8: 2020-12-27 03:03:01 2020-12-27 03:00:00</code></pre>
+<p>At this point we can calculate the averages of several columns by the
+cut time. The function <code>obs_agg</code> does this aggregation as
+shown in the following lines of code. The argument <code>gby</code>
+establish the function used to aggregate <code>cols</code>. I need to
+aggregate the data by date (year, month, date), because it is already
+filtered by the hours of interest. Then, I would have 1 observation per
+day.</p>
+<p>As standard, let us define <code>key_time</code> as
+<code>solar_time</code>. The <code>obs_agg</code> function will
+aggregate the desired data by that column.</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a>df3<span class="sc">$</span>key_time <span class="ot">&lt;-</span> df3<span class="sc">$</span>solar_time_cut</span></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" tabindex="-1"></a>df4 <span class="ot">&lt;-</span> <span class="fu">obs_agg</span>(<span class="at">dt =</span> df3,</span>
+<span id="cb26-2"><a href="#cb26-2" tabindex="-1"></a>               <span class="at">cols =</span> <span class="fu">c</span>(<span class="st">&quot;value&quot;</span>,</span>
+<span id="cb26-3"><a href="#cb26-3" tabindex="-1"></a>                        <span class="st">&quot;latitude&quot;</span>,</span>
+<span id="cb26-4"><a href="#cb26-4" tabindex="-1"></a>                        <span class="st">&quot;longitude&quot;</span>,</span>
+<span id="cb26-5"><a href="#cb26-5" tabindex="-1"></a>                        <span class="st">&quot;site_utc2lst&quot;</span>),</span>
+<span id="cb26-6"><a href="#cb26-6" tabindex="-1"></a>               <span class="at">verbose =</span> T,</span>
+<span id="cb26-7"><a href="#cb26-7" tabindex="-1"></a>               <span class="at">byalt =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<pre><code>#&gt; Selecting by alt
+#&gt; Adding time</code></pre>
+<p>Here we add the column <code>max_altitude</code> to identify the max
+altitude by site.</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" tabindex="-1"></a>df4[,</span>
+<span id="cb28-2"><a href="#cb28-2" tabindex="-1"></a>    max_altitude <span class="sc">:=</span> <span class="fu">max</span>(altitude_final),</span>
+<span id="cb28-3"><a href="#cb28-3" tabindex="-1"></a>    by <span class="ot">=</span> site_code]</span>
+<span id="cb28-4"><a href="#cb28-4" tabindex="-1"></a>df4[,</span>
+<span id="cb28-5"><a href="#cb28-5" tabindex="-1"></a>    <span class="fu">c</span>(<span class="st">&quot;site_code&quot;</span>,</span>
+<span id="cb28-6"><a href="#cb28-6" tabindex="-1"></a>      <span class="st">&quot;altitude_final&quot;</span>,</span>
+<span id="cb28-7"><a href="#cb28-7" tabindex="-1"></a>      <span class="st">&quot;max_altitude&quot;</span>)] <span class="sc">|&gt;</span> <span class="fu">unique</span>()</span></code></pre></div>
+<pre><code>#&gt;    site_code altitude_final max_altitude
+#&gt;       &lt;char&gt;          &lt;num&gt;        &lt;num&gt;
+#&gt; 1:       DRP             10           10</code></pre>
+</div>
+</div>
+</div>
+<div id="master" class="section level2">
+<h2>Master</h2>
+<p>Before generating the receptors list, we have the database with all
+the required information</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" tabindex="-1"></a>master <span class="ot">&lt;-</span> df4</span></code></pre></div>
+<p>We may replace missing values with a nine nines. Here is
+commented</p>
+<p>#master[is.na(master)] &lt;- 999999999</p>
+<p>We transform the time variables to character and round coordinates
+with 4 digits</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" tabindex="-1"></a>master<span class="sc">$</span>timeUTC <span class="ot">&lt;-</span> <span class="fu">as.character</span>(master<span class="sc">$</span>timeUTC)</span>
+<span id="cb31-2"><a href="#cb31-2" tabindex="-1"></a>master<span class="sc">$</span>local_time <span class="ot">&lt;-</span> <span class="fu">as.character</span>(master<span class="sc">$</span>local_time)</span>
+<span id="cb31-3"><a href="#cb31-3" tabindex="-1"></a>master<span class="sc">$</span>latitude <span class="ot">&lt;-</span> <span class="fu">round</span>(master<span class="sc">$</span>latitude, <span class="dv">4</span>)</span>
+<span id="cb31-4"><a href="#cb31-4" tabindex="-1"></a>master<span class="sc">$</span>longitude <span class="ot">&lt;-</span> <span class="fu">round</span>(master<span class="sc">$</span>longitude, <span class="dv">4</span>)</span></code></pre></div>
+</div>
+<div id="save-master" class="section level2">
+<h2>Save master</h2>
+<p>Finally we save the master file</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" tabindex="-1"></a>out <span class="ot">&lt;-</span> <span class="fu">tempfile</span>()</span></code></pre></div>
+<div id="txt" class="section level3">
+<h3>txt</h3>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" tabindex="-1"></a><span class="fu">message</span>(<span class="fu">paste0</span>(out,<span class="st">&quot;_&quot;</span>, datasetid, <span class="st">&quot;.txt</span><span class="sc">\n</span><span class="st">&quot;</span>))</span>
+<span id="cb33-2"><a href="#cb33-2" tabindex="-1"></a><span class="fu">fwrite</span>(master,</span>
+<span id="cb33-3"><a href="#cb33-3" tabindex="-1"></a>       <span class="fu">paste0</span>(out,<span class="st">&quot;_&quot;</span>, datasetid, <span class="st">&quot;.txt&quot;</span>),</span>
+<span id="cb33-4"><a href="#cb33-4" tabindex="-1"></a>       <span class="at">sep =</span> <span class="st">&quot; &quot;</span>)</span></code></pre></div>
+<pre><code>#&gt; C:\Users\sibarrae\AppData\Local\Temp\RtmpMzbU8P\file5e287aa53d25_shipboard-flask.txt</code></pre>
+</div>
+<div id="csv" class="section level3">
+<h3>csv</h3>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" tabindex="-1"></a><span class="fu">message</span>(<span class="fu">paste0</span>(out,<span class="st">&quot;_&quot;</span>, datasetid, <span class="st">&quot;.csv</span><span class="sc">\n</span><span class="st">&quot;</span>))</span>
+<span id="cb35-2"><a href="#cb35-2" tabindex="-1"></a><span class="fu">fwrite</span>(master,</span>
+<span id="cb35-3"><a href="#cb35-3" tabindex="-1"></a>       <span class="fu">paste0</span>(out,<span class="st">&quot;_&quot;</span>, datasetid, <span class="st">&quot;.csv&quot;</span>),</span>
+<span id="cb35-4"><a href="#cb35-4" tabindex="-1"></a>       <span class="at">sep =</span> <span class="st">&quot;,&quot;</span>)</span></code></pre></div>
+<pre><code>#&gt; C:\Users\sibarrae\AppData\Local\Temp\RtmpMzbU8P\file5e287aa53d25_shipboard-flask.csv</code></pre>
+</div>
+<div id="csvy" class="section level3">
+<h3>csvy</h3>
+<p>CSVY are csv files with a YAML header to include metadata in
+tabulated text files</p>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;</span><span class="sc">\n</span><span class="st">Adding notes in csvy:</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb37-2"><a href="#cb37-2" tabindex="-1"></a>notes <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">paste0</span>(<span class="st">&quot;sector: &quot;</span>, datasetid),</span>
+<span id="cb37-3"><a href="#cb37-3" tabindex="-1"></a>           <span class="fu">paste0</span>(<span class="st">&quot;timespan: &quot;</span>, yy),</span>
+<span id="cb37-4"><a href="#cb37-4" tabindex="-1"></a>           <span class="fu">paste0</span>(<span class="st">&quot;hours: &quot;</span>, evening),</span>
+<span id="cb37-5"><a href="#cb37-5" tabindex="-1"></a>           <span class="st">&quot;local_time: used solar_time&quot;</span>)</span>
+<span id="cb37-6"><a href="#cb37-6" tabindex="-1"></a></span>
+<span id="cb37-7"><a href="#cb37-7" tabindex="-1"></a><span class="fu">cat</span>(notes, <span class="at">sep =</span> <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb37-8"><a href="#cb37-8" tabindex="-1"></a></span>
+<span id="cb37-9"><a href="#cb37-9" tabindex="-1"></a><span class="fu">message</span>(<span class="fu">paste0</span>(out,<span class="st">&quot;_&quot;</span>, datasetid, <span class="st">&quot;.csvy</span><span class="sc">\n</span><span class="st">&quot;</span>))</span>
+<span id="cb37-10"><a href="#cb37-10" tabindex="-1"></a><span class="fu">obs_write_csvy</span>(<span class="at">dt =</span> master,</span>
+<span id="cb37-11"><a href="#cb37-11" tabindex="-1"></a>               <span class="at">notes =</span> notes,</span>
+<span id="cb37-12"><a href="#cb37-12" tabindex="-1"></a>               <span class="at">out =</span> <span class="fu">paste0</span>(out,<span class="st">&quot;_&quot;</span>, datasetid, <span class="st">&quot;.csvy&quot;</span>))</span></code></pre></div>
+<pre><code>#&gt; Adding notes in csvy:
+#&gt; sector: surface-insitu
+#&gt; timespan: 2020
+#&gt; spatial_limits: north = 80, south = 10, east = -50, west = -170
+#&gt; data: Data averaged every 20 seconds
+#&gt; altitude: &lt; 8000
+#&gt; hours: 14
+#&gt; local_time: used solar_time
+#&gt; C:\Users\sibarrae\AppData\Local\Temp\RtmpSMAWpf\file9558428068b2_surface-flask.csvy</code></pre>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" tabindex="-1"></a><span class="fu">obs_read_csvy</span>(<span class="fu">paste0</span>(out,<span class="st">&quot;_&quot;</span>, datasetid, <span class="st">&quot;.csvy&quot;</span>))</span></code></pre></div>
+<pre><code>#&gt;  [1] &quot;---&quot;                                                             
+#&gt;  [2] &quot;name: Metadata &quot;                                                 
+#&gt;  [3] &quot;sector: shipboard-flask&quot;                                         
+#&gt;  [4] &quot;timespan: 2020&quot;                                                  
+#&gt;  [5] &quot;hours: 14&quot;                                                       
+#&gt;  [6] &quot;local_time: used solar_time&quot;                                     
+#&gt;  [7] &quot;structure: &quot;                                                     
+#&gt;  [8] &quot;Classes &#39;data.table&#39; and &#39;data.frame&#39;:\t8 obs. of  20 variables:&quot;
+#&gt;  [9] &quot; $ timeUTC                  : chr  \&quot;2020-01-01 15:00:00\&quot; \&quot;..&quot; 
+#&gt; [10] &quot; $ site_code                : chr  \&quot;DRP\&quot; \&quot;DRP\&quot; ...&quot;          
+#&gt; [11] &quot; $ altitude_final           : num  10 10 10 10 10 ...&quot;           
+#&gt; [12] &quot; $ type_altitude            : logi  NA NA NA ...&quot;                
+#&gt; [13] &quot; $ lab_1_abbr               : chr  \&quot;NOAA\&quot; \&quot;NOAA\&quot; ...&quot;        
+#&gt; [14] &quot; $ dataset_calibration_scale: chr  \&quot;WMO CH4 X2004A\&quot; \&quot;WMO \&quot;..&quot;
+#&gt; [15] &quot; $ value                    : num  1.81e-06 1.81e-06 ...&quot;        
+#&gt; [16] &quot; $ latitude                 : num  -59 -59 ...&quot;                  
+#&gt; [17] &quot; $ longitude                : num  -63.7 -63.7 ...&quot;              
+#&gt; [18] &quot; $ site_utc2lst             : num  -4 -4 -4 -4 -4 ...&quot;           
+#&gt; [19] &quot; $ year                     : int  2020 2020 2020 2020 202..&quot;    
+#&gt; [20] &quot; $ month                    : int  1 2 2 3 6 ...&quot;                
+#&gt; [21] &quot; $ day                      : chr  \&quot;01\&quot; \&quot;09\&quot; ...&quot;            
+#&gt; [22] &quot; $ hour                     : int  15 20 22 15 17 ...&quot;           
+#&gt; [23] &quot; $ minute                   : int  0 0 0 0 0 ...&quot;                
+#&gt; [24] &quot; $ second                   : int  0 0 0 0 0 ...&quot;                
+#&gt; [25] &quot; $ time                     : num  1.58e+09 1.58e+09 ...&quot;        
+#&gt; [26] &quot; $ time_decimal             : num  2020 2020 ...&quot;                
+#&gt; [27] &quot; $ max_altitude             : num  10 10 10 10 10 ...&quot;           
+#&gt; [28] &quot; $ local_time               : chr  NA NA ...&quot;                    
+#&gt; [29] &quot; - attr(*, \&quot;.internal.selfref\&quot;)=&lt;externalptr&gt; &quot;                
+#&gt; [30] &quot;NULL&quot;                                                            
+#&gt; [31] &quot;---&quot;
+#&gt;                timeUTC site_code altitude_final type_altitude lab_1_abbr
+#&gt;                 &lt;POSc&gt;    &lt;char&gt;          &lt;int&gt;        &lt;lgcl&gt;     &lt;char&gt;
+#&gt; 1: 2020-01-01 15:00:00       DRP             10            NA       NOAA
+#&gt; 2: 2020-02-09 20:00:00       DRP             10            NA       NOAA
+#&gt; 3: 2020-02-18 22:00:00       DRP             10            NA       NOAA
+#&gt; 4: 2020-03-18 15:00:00       DRP             10            NA       NOAA
+#&gt; 5: 2020-06-07 17:00:00       DRP             10            NA       NOAA
+#&gt; 6: 2020-06-19 03:00:00       DRP             10            NA       NOAA
+#&gt; 7: 2020-12-01 07:00:00       DRP             10            NA       NOAA
+#&gt; 8: 2020-12-27 03:00:00       DRP             10            NA       NOAA
+#&gt;    dataset_calibration_scale        value latitude longitude site_utc2lst  year
+#&gt;                       &lt;char&gt;        &lt;num&gt;    &lt;num&gt;     &lt;num&gt;        &lt;int&gt; &lt;int&gt;
+#&gt; 1:            WMO CH4 X2004A 1.810345e-06 -59.0000  -63.6833           -4  2020
+#&gt; 2:            WMO CH4 X2004A 1.805695e-06 -58.9833  -63.6833           -4  2020
+#&gt; 3:            WMO CH4 X2004A 1.804080e-06 -59.0167  -62.8167           -4  2020
+#&gt; 4:            WMO CH4 X2004A 1.803575e-06 -58.9500  -64.2667           -4  2020
+#&gt; 5:            WMO CH4 X2004A 1.821020e-06 -58.9500  -68.2167           -4  2020
+#&gt; 6:            WMO CH4 X2004A 1.824280e-06 -58.9833  -64.9667           -4  2020
+#&gt; 7:            WMO CH4 X2004A 1.833670e-06 -59.0050  -67.7335           -4  2020
+#&gt; 8:            WMO CH4 X2004A 1.825290e-06 -58.9750  -63.7260           -4  2020
+#&gt;    month   day  hour minute second       time time_decimal max_altitude
+#&gt;    &lt;int&gt; &lt;int&gt; &lt;int&gt;  &lt;int&gt;  &lt;int&gt;      &lt;int&gt;        &lt;num&gt;        &lt;int&gt;
+#&gt; 1:     1     1    15      0      0 1577890800     2020.002           10
+#&gt; 2:     2     9    20      0      0 1581278400     2020.109           10
+#&gt; 3:     2    18    22      0      0 1582063200     2020.134           10
+#&gt; 4:     3    18    15      0      0 1584543600     2020.212           10
+#&gt; 5:     6     7    17      0      0 1591549200     2020.434           10
+#&gt; 6:     6    19     3      0      0 1592535600     2020.465           10
+#&gt; 7:    12     1     7      0      0 1606806000     2020.916           10
+#&gt; 8:    12    27     3      0      0 1609038000     2020.987           10
+#&gt;    local_time
+#&gt;        &lt;lgcl&gt;
+#&gt; 1:         NA
+#&gt; 2:         NA
+#&gt; 3:         NA
+#&gt; 4:         NA
+#&gt; 5:         NA
+#&gt; 6:         NA
+#&gt; 7:         NA
+#&gt; 8:         NA</code></pre>
+</div>
+</div>
+<div id="receptors" class="section level2">
+<h2>Receptors</h2>
+<p>Now we can do the last step which is generating the receptor list
+files. Now we filter selected columns</p>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" tabindex="-1"></a>receptor <span class="ot">&lt;-</span> master[, <span class="fu">c</span>(<span class="st">&quot;site_code&quot;</span>,</span>
+<span id="cb41-2"><a href="#cb41-2" tabindex="-1"></a>                     <span class="st">&quot;year&quot;</span>,</span>
+<span id="cb41-3"><a href="#cb41-3" tabindex="-1"></a>                     <span class="st">&quot;month&quot;</span>,</span>
+<span id="cb41-4"><a href="#cb41-4" tabindex="-1"></a>                     <span class="st">&quot;day&quot;</span>,</span>
+<span id="cb41-5"><a href="#cb41-5" tabindex="-1"></a>                     <span class="st">&quot;hour&quot;</span>,</span>
+<span id="cb41-6"><a href="#cb41-6" tabindex="-1"></a>                     <span class="st">&quot;minute&quot;</span>,</span>
+<span id="cb41-7"><a href="#cb41-7" tabindex="-1"></a>                     <span class="st">&quot;second&quot;</span>,</span>
+<span id="cb41-8"><a href="#cb41-8" tabindex="-1"></a>                     <span class="st">&quot;latitude&quot;</span>,</span>
+<span id="cb41-9"><a href="#cb41-9" tabindex="-1"></a>                     <span class="st">&quot;longitude&quot;</span>,</span>
+<span id="cb41-10"><a href="#cb41-10" tabindex="-1"></a>                     <span class="st">&quot;altitude_final&quot;</span>,</span>
+<span id="cb41-11"><a href="#cb41-11" tabindex="-1"></a>                     <span class="st">&quot;type_altitude&quot;</span>,</span>
+<span id="cb41-12"><a href="#cb41-12" tabindex="-1"></a>                     <span class="st">&quot;time_decimal&quot;</span>)]</span></code></pre></div>
+<p>We can round altitude also</p>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" tabindex="-1"></a>receptor<span class="sc">$</span>altitude_final <span class="ot">&lt;-</span> <span class="fu">round</span>(receptor<span class="sc">$</span>altitude_final)</span></code></pre></div>
+<p>Now we can format time variables with two digits</p>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" tabindex="-1"></a>receptor <span class="ot">&lt;-</span> <span class="fu">obs_format</span>(receptor,</span>
+<span id="cb43-2"><a href="#cb43-2" tabindex="-1"></a>                        <span class="at">spf =</span>  <span class="fu">c</span>(<span class="st">&quot;month&quot;</span>, <span class="st">&quot;day&quot;</span>,</span>
+<span id="cb43-3"><a href="#cb43-3" tabindex="-1"></a>                                 <span class="st">&quot;hour&quot;</span>, <span class="st">&quot;minute&quot;</span>, <span class="st">&quot;second&quot;</span>))</span></code></pre></div>
+<p>We have a column that indicate AGL or ASL</p>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" tabindex="-1"></a>receptor_agl <span class="ot">&lt;-</span> receptor[type_altitude <span class="sc">==</span> <span class="dv">0</span>]</span>
+<span id="cb44-2"><a href="#cb44-2" tabindex="-1"></a>receptor_asl <span class="ot">&lt;-</span> receptor[type_altitude <span class="sc">==</span> <span class="dv">1</span>]</span></code></pre></div>
+<p>Finally, we save the receptors</p>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" tabindex="-1"></a><span class="cf">if</span>(<span class="fu">nrow</span>(receptor_agl) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb45-2"><a href="#cb45-2" tabindex="-1"></a>  <span class="fu">message</span>(<span class="fu">paste0</span>(out, <span class="st">&quot;_&quot;</span>, datasetid, <span class="st">&quot;_receptor_AGL.txt&quot;</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb45-3"><a href="#cb45-3" tabindex="-1"></a></span>
+<span id="cb45-4"><a href="#cb45-4" tabindex="-1"></a>  <span class="fu">fwrite</span>(<span class="at">x =</span> receptor_agl,</span>
+<span id="cb45-5"><a href="#cb45-5" tabindex="-1"></a>         <span class="at">file =</span> <span class="fu">paste0</span>(out, <span class="st">&quot;_&quot;</span>, datasetid, <span class="st">&quot;_receptor_AGL.txt&quot;</span>),</span>
+<span id="cb45-6"><a href="#cb45-6" tabindex="-1"></a>         <span class="at">sep =</span> <span class="st">&quot; &quot;</span>)</span>
+<span id="cb45-7"><a href="#cb45-7" tabindex="-1"></a>}</span>
+<span id="cb45-8"><a href="#cb45-8" tabindex="-1"></a></span>
+<span id="cb45-9"><a href="#cb45-9" tabindex="-1"></a><span class="cf">if</span>(<span class="fu">nrow</span>(receptor_asl) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb45-10"><a href="#cb45-10" tabindex="-1"></a>  <span class="fu">message</span>(<span class="fu">paste0</span>(out, <span class="st">&quot;_&quot;</span>, datasetid, <span class="st">&quot;_receptor_ASL.txt&quot;</span>), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb45-11"><a href="#cb45-11" tabindex="-1"></a></span>
+<span id="cb45-12"><a href="#cb45-12" tabindex="-1"></a>  <span class="fu">fwrite</span>(<span class="at">x =</span> receptor_asl,</span>
+<span id="cb45-13"><a href="#cb45-13" tabindex="-1"></a>         <span class="at">file =</span> <span class="fu">paste0</span>(out, <span class="st">&quot;_&quot;</span>, datasetid, <span class="st">&quot;receptor_ASL.txt&quot;</span>),</span>
+<span id="cb45-14"><a href="#cb45-14" tabindex="-1"></a>         <span class="at">sep =</span> <span class="st">&quot; &quot;</span>)</span>
+<span id="cb45-15"><a href="#cb45-15" tabindex="-1"></a></span>
+<span id="cb45-16"><a href="#cb45-16" tabindex="-1"></a>}</span></code></pre></div>
+</div>
+<div id="plot" class="section level2">
+<h2>Plot</h2>
+<p>Finally, we just plot some data, run it locally</p>
+<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" tabindex="-1"></a><span class="fu">obs_plot</span>(df4, <span class="at">time =</span> <span class="st">&quot;timeUTC&quot;</span>, <span class="at">yfactor =</span> <span class="fl">1e9</span>)</span></code></pre></div>
+<pre><code>#&gt; Found the following sites: 
+#&gt; [1] DRP
+#&gt; Plotting the following sites: 
+#&gt; [1] DRP
+#&gt; png 
+#&gt;   2</code></pre>
+<div class="float">
+<img src="data:image/png;base64,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" alt="Time series" />
+<div class="figcaption">Time series</div>
+</div>
+<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
+<span id="cb48-2"><a href="#cb48-2" tabindex="-1"></a>dx <span class="ot">&lt;-</span> df4[, </span>
+<span id="cb48-3"><a href="#cb48-3" tabindex="-1"></a>    <span class="fu">lapply</span>(.SD, mean),</span>
+<span id="cb48-4"><a href="#cb48-4" tabindex="-1"></a>    .SDcols <span class="ot">=</span> <span class="st">&quot;value&quot;</span>,</span>
+<span id="cb48-5"><a href="#cb48-5" tabindex="-1"></a>    by <span class="ot">=</span> .(latitude, longitude)]</span>
+<span id="cb48-6"><a href="#cb48-6" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(dx, <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">&quot;longitude&quot;</span>, <span class="st">&quot;latitude&quot;</span>), <span class="at">crs =</span> <span class="dv">4326</span>)</span>
+<span id="cb48-7"><a href="#cb48-7" tabindex="-1"></a><span class="fu">plot</span>(x[<span class="st">&quot;value&quot;</span>], <span class="at">axes =</span> T, <span class="at">reset =</span> F)</span>
+<span id="cb48-8"><a href="#cb48-8" tabindex="-1"></a>maps<span class="sc">::</span><span class="fu">map</span>(<span class="at">add =</span> T)</span></code></pre></div>
+<p>!Map<a href="https://github.com/noaa-gml/rtorf/blob/main/man/figures/obsplot_shipboardflask_map.png?raw=true"></a></p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

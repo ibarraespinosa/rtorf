@@ -19,6 +19,7 @@
 <url><loc>https://noaa-gml.github.io/rtorf/news/index.html</loc></url>
 <url><loc>https://noaa-gml.github.io/rtorf/paper.html</loc></url>
 <url><loc>https://noaa-gml.github.io/rtorf/reference/fex.html</loc></url>
+<url><loc>https://noaa-gml.github.io/rtorf/reference/get_nt.html</loc></url>
 <url><loc>https://noaa-gml.github.io/rtorf/reference/index.html</loc></url>
 <url><loc>https://noaa-gml.github.io/rtorf/reference/itau2date.html</loc></url>
 <url><loc>https://noaa-gml.github.io/rtorf/reference/obs_POSIX_to_decimal.html</loc></url>
@@ -43,6 +44,9 @@
 <url><loc>https://noaa-gml.github.io/rtorf/reference/obs_format_et.html</loc></url>
 <url><loc>https://noaa-gml.github.io/rtorf/reference/obs_freq.html</loc></url>
 <url><loc>https://noaa-gml.github.io/rtorf/reference/obs_grid.html</loc></url>
+<url><loc>https://noaa-gml.github.io/rtorf/reference/obs_grid_check.html</loc></url>
+<url><loc>https://noaa-gml.github.io/rtorf/reference/obs_grid_kernel.html</loc></url>
+<url><loc>https://noaa-gml.github.io/rtorf/reference/obs_grid_simple.html</loc></url>
 <url><loc>https://noaa-gml.github.io/rtorf/reference/obs_hysplit_ascdata.html</loc></url>
 <url><loc>https://noaa-gml.github.io/rtorf/reference/obs_hysplit_control.html</loc></url>
 <url><loc>https://noaa-gml.github.io/rtorf/reference/obs_hysplit_control_read.html</loc></url>

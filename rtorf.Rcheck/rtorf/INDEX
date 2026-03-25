@@ -1,0 +1,45 @@
+fex                     File extension
+get_nt                  Check the max number of threads
+obs_addltime            add local time
+obs_addmtime            Add matlab time
+obs_addstime            Add solar time
+obs_addtime             Add times
+obs_agg                 Aggregates Observations by time
+obs_convolve            obs_convolve
+obs_find_receptors      Compares expected receptors
+obs_foot                obs_footprints
+obs_footname            Expected footprint name
+obs_format              Formatting data
+obs_freq                return numeric vector in intervals
+obs_grid                obs_grid
+obs_grid_check          Conservation check for gridded footprints
+obs_grid_kernel         Gaussian kernel footprint gridding
+obs_grid_simple         Bin-and-sum footprint gridding
+obs_hysplit_ascdata     obs_hysplit_ascdata
+obs_hysplit_control     obs_hysplit_control
+obs_hysplit_control_read
+                        obs_hysplit_control_read
+obs_hysplit_setup       obs_hysplit_setup
+obs_id2pos              obs_id2pos
+obs_info2id             obs_info2id
+obs_julian              obs_julian
+obs_list.dt             list.dt
+obs_meta                Read obspack metadata
+obs_nc                  obs_nc
+obs_nc_get              obs_nc_get
+obs_normalize_dmass     obs_normalize_dmass
+obs_out                 outersect
+obs_plot                Read obspack metadata
+obs_rbind               rbind obspack
+obs_read                Read obspack (.txt)
+obs_read_csvy           reads CSVY
+obs_read_nc             Read obspack (.nc)
+obs_read_nc_att         Read obspack attributes (.nc)
+obs_roundtime           round seconds from "POSIXct" "POSIXt" classes
+obs_select_sec          Select Observations by closest time (seconds)
+obs_summary             Summary of the ObsPack files (.txt)
+obs_table               Obspack Table Summary
+obs_traj_foot           obs_traj_foot
+obs_trunc               Trunc numbers with a desired number of decimals
+obs_write_csvy          Generates YAML and write data.frame
+sr                      Extacts n last characters

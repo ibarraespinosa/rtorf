@@ -67,7 +67,7 @@ contains
     integer, intent(in)  :: n_part, nx, ny, n_threads
     real(8), intent(in)  :: p_lat(n_part), p_lon(n_part), p_foot(n_part)
     real(8), intent(in)  :: lon_min, lat_min, res
-    real(8), intent(out) :: grid_out(nx, ny)
+    real(8), intent(out) :: grid_out(ny, nx)
 
     integer :: k, i, j
     real(8) :: inv_res
@@ -89,12 +89,74 @@ contains
       j = floor((p_lat(k) - lat_min) * inv_res) + 1
 
       if (i >= 1 .and. i <= nx .and. j >= 1 .and. j <= ny) then
-        grid_out(i, j) = grid_out(i, j) + p_foot(k)
+        grid_out(j, i) = grid_out(j, i) + p_foot(k)
       end if
     end do
     !$OMP END PARALLEL DO
 
   end subroutine grid_simple
+
+
+  ! ----------------------------------------------------------
+  !  grid_cube — 3D bin-and-sum for time-resolved footprints.
+  !
+  !  Bins particles into a longitude-latitude-time grid.
+  !  Time is handled as "hours back" from p_time.
+  !
+  !  Parameters
+  !  ----------
+  !  n_part   : number of particles
+  !  p_lat    : latitudes  (degrees)
+  !  p_lon    : longitudes (degrees)
+  !  p_time   : minutes (HYSPLIT relative time)
+  !  p_foot   : foot values
+  !  nx, ny, nt: grid dimensions (lon × lat × time)
+  !  lon_min  : western edge (degrees)
+  !  lat_min  : southern edge (degrees)
+  !  res      : spatial cell size (degrees)
+  !  t0       : start time (minutes, usually 0)
+  !  dt       : time step (minutes, e.g. 60)
+  !  n_threads: OMP thread count
+  !  grid_out : [out] nx × ny × nt summed footprint
+  ! ----------------------------------------------------------
+  subroutine grid_cube(n_part, p_lat, p_lon, p_time, p_foot, &
+                       nx, ny, nt, lon_min, lat_min, res, t0, dt, &
+                       n_threads, grid_out)
+
+    integer, intent(in)  :: n_part, nx, ny, nt, n_threads
+    real(8), intent(in)  :: p_lat(n_part), p_lon(n_part), p_time(n_part), p_foot(n_part)
+    real(8), intent(in)  :: lon_min, lat_min, res, t0, dt
+    real(8), intent(out) :: grid_out(ny, nx, nt)
+
+    integer :: k, i, j, l
+    real(8) :: inv_res, inv_dt, btime
+
+    grid_out = 0.0d0
+    inv_res  = 1.0d0 / res
+    inv_dt   = 1.0d0 / dt
+
+    call omp_set_num_threads(n_threads)
+
+    !$OMP PARALLEL DO PRIVATE(k, i, j, l, btime) &
+    !$OMP SHARED(p_lon, p_lat, p_time, p_foot, lon_min, lat_min, inv_res, t0, inv_dt, nt) &
+    !$OMP REDUCTION(+:grid_out)
+    do k = 1, n_part
+      ! Handle longitude and latitude
+      i = floor((p_lon(k) - lon_min) * inv_res) + 1
+      j = floor((p_lat(k) - lat_min) * inv_res) + 1
+      
+      ! btime is minutes back from t0 (usually 0 in HYSPLIT)
+      btime = t0 - p_time(k)
+      l = floor(btime * inv_dt) + 1
+
+      if (i >= 1 .and. i <= nx .and. j >= 1 .and. j <= ny .and. l >= 1 .and. l <= nt) then
+        grid_out(j, i, l) = grid_out(j, i, l) + p_foot(k)
+      end if
+    end do
+    !$OMP END PARALLEL DO
+
+  end subroutine grid_cube
+
 
 
   ! ----------------------------------------------------------
@@ -142,7 +204,7 @@ contains
     real(8), intent(in) :: lon_min, lat_min, lon_res, lat_res
     real(8), intent(in) :: bandwidth
     logical, intent(in) :: use_haversine
-    real(8), intent(out):: grid_out(n_lon, n_lat)
+    real(8), intent(out):: grid_out(n_lat, n_lon)
 
     integer :: i, j, k, i_min, i_max, j_min, j_max
     real(8) :: dist_sq, weight, norm_factor
@@ -216,7 +278,7 @@ contains
           weight = norm_factor * dexp(-0.5d0 * dist_sq / bw_sq) * cell_area
 
           !$omp atomic
-          grid_out(j, k) = grid_out(j, k) + foot(i) * weight
+          grid_out(k, j) = grid_out(k, j) + foot(i) * weight
 
         end do
       end do
@@ -243,7 +305,7 @@ subroutine r_grid_simple(n_part, p_lat, p_lon, p_foot, &
   integer, intent(in)  :: n_part, nx, ny, n_threads
   real(8), intent(in)  :: p_lat(n_part), p_lon(n_part), p_foot(n_part)
   real(8), intent(in)  :: lon_min, lat_min, res
-  real(8), intent(out) :: grid_out(nx, ny)
+  real(8), intent(out) :: grid_out(ny, nx)
 
   call grid_simple(n_part, p_lat, p_lon, p_foot, &
                    nx, ny, lon_min, lat_min, res, &
@@ -265,7 +327,7 @@ subroutine r_kernel_gaussian(n_pts, lats, lons, foot,   &
   real(8), intent(in) :: grid_lon(n_lon), grid_lat(n_lat)
   real(8), intent(in) :: lon_min, lat_min, lon_res, lat_res, bandwidth
   logical, intent(in) :: use_haversine
-  real(8), intent(out):: grid_out(n_lon, n_lat)
+  real(8), intent(out):: grid_out(n_lat, n_lon)
 
   call kernel_gaussian(n_pts, lats, lons, foot,   &
                        n_lon, n_lat,               &
@@ -275,3 +337,19 @@ subroutine r_kernel_gaussian(n_pts, lats, lons, foot,   &
                        bandwidth, use_haversine,   &
                        n_threads, grid_out)
 end subroutine r_kernel_gaussian
+
+
+subroutine r_grid_cube(n_part, p_lat, p_lon, p_time, p_foot, &
+                       nx, ny, nt, lon_min, lat_min, res, t0, dt, &
+                       n_threads, grid_out)
+  use footprint_tools
+  implicit none
+  integer, intent(in)  :: n_part, nx, ny, nt, n_threads
+  real(8), intent(in)  :: p_lat(n_part), p_lon(n_part), p_time(n_part), p_foot(n_part)
+  real(8), intent(in)  :: lon_min, lat_min, res, t0, dt
+  real(8), intent(out) :: grid_out(ny, nx, nt)
+
+  call grid_cube(n_part, p_lat, p_lon, p_time, p_foot, &
+                 nx, ny, nt, lon_min, lat_min, res, t0, dt, &
+                 n_threads, grid_out)
+end subroutine r_grid_cube

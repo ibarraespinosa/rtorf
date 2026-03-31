@@ -8,13 +8,17 @@
 
 /* .Fortran calls */
 extern void F77_NAME(ntf)(void *);
+extern void F77_NAME(r_grid_cube)(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
+extern void F77_NAME(r_grid_cube_kernel)(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
 extern void F77_NAME(r_grid_simple)(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
 extern void F77_NAME(r_kernel_gaussian)(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
 
 static const R_FortranMethodDef FortranEntries[] = {
-    {"ntf",               (DL_FUNC) &F77_NAME(ntf),                1},
-    {"r_grid_simple",     (DL_FUNC) &F77_NAME(r_grid_simple),     11},
-    {"r_kernel_gaussian", (DL_FUNC) &F77_NAME(r_kernel_gaussian), 16},
+    {"ntf",                (DL_FUNC) &F77_NAME(ntf),                 1},
+    {"r_grid_cube",        (DL_FUNC) &F77_NAME(r_grid_cube),        15},
+    {"r_grid_cube_kernel", (DL_FUNC) &F77_NAME(r_grid_cube_kernel), 20},
+    {"r_grid_simple",      (DL_FUNC) &F77_NAME(r_grid_simple),      11},
+    {"r_kernel_gaussian",  (DL_FUNC) &F77_NAME(r_kernel_gaussian),  16},
     {NULL, NULL, 0}
 };
 

@@ -145,11 +145,10 @@ obs_grid_simple <- function(
 #  obs_grid_cube
 # ------------------------------------------------------------
 
-#' 3D bin-and-sum footprint gridding (lon, lat, time)
+#' 3D footprint gridding (lon, lat, time)
 #'
 #' Bins particles into a 3D grid: longitude, latitude, and time.
-#' Time is binned as "hours back" (or any other time unit) from a
-#' reference time.
+#' Supports two methods: "simple" (bin-and-sum) and "kernel" (Gaussian smoothing).
 #'
 #' @param x A \code{data.table} or \code{data.frame} with columns
 #'   \code{lat}, \code{lon}, \code{time} (minutes), and \code{foot}.
@@ -157,16 +156,20 @@ obs_grid_simple <- function(
 #' @param res Spatial resolution (degrees).
 #' @param nt Number of time layers in the output cube.
 #' @param t0 Reference time for the first layer (minutes). Default \code{0}.
-#'   In HYSPLIT backward runs, particles start at \code{time = 0}
-#'   and go negative. \code{t0 = 0} means layer 1 is 0 to \code{dt}
-#'   minutes back.
 #' @param dt Time step per layer (minutes). Default \code{60} (1 hour).
+#' @param method Character. Either \code{"simple"} for bin-and-sum or
+#'   \code{"kernel"} for Gaussian smoothing. Default \code{"simple"}.
+#' @param bandwidth Kernel standard deviation for \code{method = "kernel"}.
+#'   In degrees if \code{use_haversine = FALSE}, or metres if \code{TRUE}.
+#'   Default equals \code{res}.
+#' @param use_haversine Logical. If \code{TRUE}, uses great-circle distances
+#'   and \code{bandwidth} in metres for kernel smoothing.
 #' @param n_threads Number of OpenMP threads.
 #' @param npar Normalization factor (total particles released).
 #'
 #' @return A named list:
 #' \describe{
-#'   \item{\code{grid}}{Numeric 3D array of dimension \code{[nx x ny x nt]}.}
+#'   \item{\code{grid}}{Numeric 3D array of dimension \code{[ny x nx x nt]}.}
 #'   \item{\code{lon, lat}}{Cell-centre coordinates.}
 #'   \item{\code{time}}{Start time of each bin (minutes back from \code{t0}).}
 #' }
@@ -182,44 +185,78 @@ obs_grid_cube <- function(
   nt = 240L,
   t0 = 0,
   dt = 60,
+  method = c("simple", "kernel"),
+  bandwidth = res,
+  use_haversine = FALSE,
   n_threads = 1L,
   npar = 1L
 ) {
+  method <- match.arg(method)
   stopifnot(
     is.data.frame(x),
     all(c("lat", "lon", "time", "foot") %in% names(x)),
     lon_max > lon_min,
     lat_max > lat_min,
     res > 0,
-    nt > 0
+    nt > 0,
+    bandwidth > 0
   )
 
   nx <- as.integer(round((lon_max - lon_min) / res))
   ny <- as.integer(round((lat_max - lat_min) / res))
 
-  out <- .Fortran(
-    "r_grid_cube",
-    n_part = as.integer(nrow(x)),
-    p_lat = as.double(x$lat),
-    p_lon = as.double(x$lon),
-    p_time = as.double(x$time),
-    p_foot = as.double(x$foot),
-    nx = nx,
-    ny = ny,
-    nt = as.integer(nt),
-    lon_min = as.double(lon_min),
-    lat_min = as.double(lat_min),
-    res = as.double(res),
-    t0 = as.double(t0),
-    dt = as.double(dt),
-    n_threads = as.integer(n_threads),
-    grid_out = double(nx * ny * nt)
-  )
+  grid_lon <- lon_min + (seq_len(nx) - 0.5) * res
+  grid_lat <- lat_min + (seq_len(ny) - 0.5) * res
+
+  if (method == "simple") {
+    out <- .Fortran(
+      "r_grid_cube",
+      n_part = as.integer(nrow(x)),
+      p_lat = as.double(x$lat),
+      p_lon = as.double(x$lon),
+      p_time = as.double(x$time),
+      p_foot = as.double(x$foot),
+      nx = nx,
+      ny = ny,
+      nt = as.integer(nt),
+      lon_min = as.double(lon_min),
+      lat_min = as.double(lat_min),
+      res = as.double(res),
+      t0 = as.double(t0),
+      dt = as.double(dt),
+      n_threads = as.integer(n_threads),
+      grid_out = double(nx * ny * nt)
+    )
+  } else {
+    out <- .Fortran(
+      "r_grid_cube_kernel",
+      n_pts = as.integer(nrow(x)),
+      p_lat = as.double(x$lat),
+      p_lon = as.double(x$lon),
+      p_time = as.double(x$time),
+      p_foot = as.double(x$foot),
+      n_lon = nx,
+      n_lat = ny,
+      nt = as.integer(nt),
+      grid_lon = as.double(grid_lon),
+      grid_lat = as.double(grid_lat),
+      lon_min = as.double(lon_min),
+      lat_min = as.double(lat_min),
+      lon_res = as.double(res),
+      lat_res = as.double(res),
+      t0 = as.double(t0),
+      dt = as.double(dt),
+      bandwidth = as.double(bandwidth),
+      use_haversine = as.logical(use_haversine),
+      n_threads = as.integer(n_threads),
+      grid_out = double(nx * ny * nt)
+    )
+  }
 
   list(
     grid = array(out$grid_out, dim = c(ny, nx, nt)) / npar,
-    lon = lon_min + (seq_len(nx) - 0.5) * res,
-    lat = lat_min + (seq_len(ny) - 0.5) * res,
+    lon = grid_lon,
+    lat = grid_lat,
     time = t0 - (seq_len(nt) - 1) * dt
   )
 }

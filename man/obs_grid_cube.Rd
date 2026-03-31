@@ -2,7 +2,7 @@
 % Please edit documentation in R/13_obs_grid.R
 \name{obs_grid_cube}
 \alias{obs_grid_cube}
-\title{3D bin-and-sum footprint gridding (lon, lat, time)}
+\title{3D footprint gridding (lon, lat, time)}
 \usage{
 obs_grid_cube(
   x,
@@ -14,6 +14,9 @@ obs_grid_cube(
   nt = 240L,
   t0 = 0,
   dt = 60,
+  method = c("simple", "kernel"),
+  bandwidth = res,
+  use_haversine = FALSE,
   n_threads = 1L,
   npar = 1L
 )
@@ -28,12 +31,19 @@ obs_grid_cube(
 
 \item{nt}{Number of time layers in the output cube.}
 
-\item{t0}{Reference time for the first layer (minutes). Default \code{0}.
-In HYSPLIT backward runs, particles start at \code{time = 0}
-and go negative. \code{t0 = 0} means layer 1 is 0 to \code{dt}
-minutes back.}
+\item{t0}{Reference time for the first layer (minutes). Default \code{0}.}
 
 \item{dt}{Time step per layer (minutes). Default \code{60} (1 hour).}
+
+\item{method}{Character. Either \code{"simple"} for bin-and-sum or
+\code{"kernel"} for Gaussian smoothing. Default \code{"simple"}.}
+
+\item{bandwidth}{Kernel standard deviation for \code{method = "kernel"}.
+In degrees if \code{use_haversine = FALSE}, or metres if \code{TRUE}.
+Default equals \code{res}.}
+
+\item{use_haversine}{Logical. If \code{TRUE}, uses great-circle distances
+and \code{bandwidth} in metres for kernel smoothing.}
 
 \item{n_threads}{Number of OpenMP threads.}
 
@@ -42,13 +52,12 @@ minutes back.}
 \value{
 A named list:
 \describe{
-  \item{\code{grid}}{Numeric 3D array of dimension \code{[nx x ny x nt]}.}
+  \item{\code{grid}}{Numeric 3D array of dimension \code{[ny x nx x nt]}.}
   \item{\code{lon, lat}}{Cell-centre coordinates.}
   \item{\code{time}}{Start time of each bin (minutes back from \code{t0}).}
 }
 }
 \description{
 Bins particles into a 3D grid: longitude, latitude, and time.
-Time is binned as "hours back" (or any other time unit) from a
-reference time.
+Supports two methods: "simple" (bin-and-sum) and "kernel" (Gaussian smoothing).
 }

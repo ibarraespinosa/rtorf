@@ -288,6 +288,129 @@ contains
 
   end subroutine kernel_gaussian
 
+
+  ! ----------------------------------------------------------
+  !  grid_cube_kernel — 3D kernel-smoothed footprint gridding.
+  !
+  !  Combines the temporal binning of grid_cube with the spatial
+  !  smoothing of kernel_gaussian. Each particle is binned to a
+  !  time slice l, then its foot value is spread over a 2-D spatial
+  !  Gaussian kernel within that slice.
+  !
+  !  Parameters
+  !  ----------
+  !  n_pts      : number of particles
+  !  lats, lons : particle coordinates (degrees)
+  !  p_time     : minutes (HYSPLIT relative time)
+  !  foot       : particle foot values
+  !  n_lon,n_lat,nt: grid dimensions
+  !  grid_lon   : vector of grid cell-centre longitudes  (degrees)
+  !  grid_lat   : vector of grid cell-centre latitudes   (degrees)
+  !  lon_min    : western grid edge  (degrees)
+  !  lat_min    : southern grid edge (degrees)
+  !  lon_res    : cell width  in lon (degrees)
+  !  lat_res    : cell height in lat (degrees)
+  !  t0         : start time (minutes)
+  !  dt         : time step per layer (minutes)
+  !  bandwidth  : kernel sigma (degrees if Cartesian, metres if Haversine)
+  !  use_haversine: logical
+  !  n_threads  : OMP thread count
+  !  grid_out   : [out] n_lat × n_lon × nt smoothed footprint
+  ! ----------------------------------------------------------
+  subroutine grid_cube_kernel(n_pts, lats, lons, p_time, foot, &
+                              n_lon, n_lat, nt,               &
+                              grid_lon, grid_lat,             &
+                              lon_min, lat_min,               &
+                              lon_res, lat_res,               &
+                              t0, dt, bandwidth,              &
+                              use_haversine,                  &
+                              n_threads, grid_out)
+
+    integer, intent(in) :: n_pts, n_lon, n_lat, nt, n_threads
+    real(8), intent(in) :: lats(n_pts), lons(n_pts), p_time(n_pts), foot(n_pts)
+    real(8), intent(in) :: grid_lon(n_lon), grid_lat(n_lat)
+    real(8), intent(in) :: lon_min, lat_min, lon_res, lat_res
+    real(8), intent(in) :: t0, dt, bandwidth
+    logical, intent(in) :: use_haversine
+    real(8), intent(out):: grid_out(n_lat, n_lon, nt)
+
+    integer :: i, j, k, l, i_min, i_max, j_min, j_max
+    real(8) :: dist_sq, weight, norm_factor
+    real(8) :: bw_sq, search_radius
+    real(8) :: lat_range, lon_range, cos_lat, dx, dy, btime
+    real(8) :: deg2m, cell_area, inv_dt
+
+    grid_out    = 0.0d0
+    norm_factor = 1.0d0 / (2.0d0 * pi * bandwidth**2)
+    bw_sq       = bandwidth**2
+    search_radius = 3.0d0 * bandwidth
+    deg2m       = (earth_radius * pi / 180.0d0)**2
+    inv_dt      = 1.0d0 / dt
+
+    call omp_set_num_threads(n_threads)
+
+    !$omp parallel do default(none) &
+    !$omp private(i, j, k, l, i_min, i_max, j_min, j_max, &
+    !$omp         lat_range, lon_range, cos_lat,         &
+    !$omp         dx, dy, dist_sq, weight, cell_area, btime) &
+    !$omp shared(n_pts, lats, lons, p_time, foot, n_lon, n_lat, nt, &
+    !$omp        grid_lon, grid_lat, lon_min, lat_min,   &
+    !$omp        lon_res, lat_res, t0, inv_dt, bandwidth, bw_sq, &
+    !$omp        search_radius, norm_factor, deg2m,      &
+    !$omp        use_haversine, grid_out)
+    do i = 1, n_pts
+      if (foot(i) == 0.0d0) cycle
+
+      ! ---- Temporal binning ----------------------------------
+      btime = t0 - p_time(i)
+      l = floor(btime * inv_dt) + 1
+      if (l < 1 .or. l > nt) cycle
+
+      ! ---- Bounding box in grid indices ----------------------
+      if (use_haversine) then
+        lat_range = search_radius / 111320.0d0
+        cos_lat   = cos(lats(i) * pi / 180.0d0)
+        lon_range = search_radius / (111320.0d0 * max(cos_lat, 0.01d0))
+      else
+        lat_range = search_radius
+        lon_range = search_radius
+      end if
+
+      i_min = max(1,     floor((lons(i) - lon_range - lon_min) / lon_res) + 1)
+      i_max = min(n_lon, floor((lons(i) + lon_range - lon_min) / lon_res) + 1)
+      j_min = max(1,     floor((lats(i) - lat_range - lat_min) / lat_res) + 1)
+      j_max = min(n_lat, floor((lats(i) + lat_range - lat_min) / lat_res) + 1)
+
+      ! ---- Kernel accumulation over bounding box into slice l -------------
+      do j = i_min, i_max
+        do k = j_min, j_max
+
+          if (use_haversine) then
+            dist_sq = haversine(lats(i), lons(i), grid_lat(k), grid_lon(j))**2
+            if (dist_sq > search_radius**2) cycle
+            cell_area = lon_res * lat_res * deg2m * cos(grid_lat(k) * pi / 180.0d0)
+          else
+            dx      = grid_lon(j) - lons(i)
+            dy      = grid_lat(k) - lats(i)
+            dist_sq = dx*dx + dy*dy
+            if (dist_sq > search_radius**2) cycle
+            cell_area = lon_res * lat_res
+          end if
+
+          weight = norm_factor * dexp(-0.5d0 * dist_sq / bw_sq) * cell_area
+
+          !$omp atomic
+          grid_out(k, j, l) = grid_out(k, j, l) + foot(i) * weight
+
+        end do
+      end do
+
+    end do
+    !$omp end parallel do
+
+  end subroutine grid_cube_kernel
+
+
 end module footprint_tools
 
 
@@ -353,3 +476,31 @@ subroutine r_grid_cube(n_part, p_lat, p_lon, p_time, p_foot, &
                  nx, ny, nt, lon_min, lat_min, res, t0, dt, &
                  n_threads, grid_out)
 end subroutine r_grid_cube
+
+
+subroutine r_grid_cube_kernel(n_pts, lats, lons, p_time, foot, &
+                              n_lon, n_lat, nt,               &
+                              grid_lon, grid_lat,             &
+                              lon_min, lat_min,               &
+                              lon_res, lat_res,               &
+                              t0, dt, bandwidth,              &
+                              use_haversine,                  &
+                              n_threads, grid_out)
+  use footprint_tools
+  implicit none
+  integer, intent(in) :: n_pts, n_lon, n_lat, nt, n_threads
+  real(8), intent(in) :: lats(n_pts), lons(n_pts), p_time(n_pts), foot(n_pts)
+  real(8), intent(in) :: grid_lon(n_lon), grid_lat(n_lat)
+  real(8), intent(in) :: lon_min, lat_min, lon_res, lat_res, t0, dt, bandwidth
+  logical, intent(in) :: use_haversine
+  real(8), intent(out):: grid_out(n_lat, n_lon, nt)
+
+  call grid_cube_kernel(n_pts, lats, lons, p_time, foot, &
+                        n_lon, n_lat, nt,               &
+                        grid_lon, grid_lat,             &
+                        lon_min, lat_min,               &
+                        lon_res, lat_res,               &
+                        t0, dt, bandwidth,              &
+                        use_haversine,                  &
+                        n_threads, grid_out)
+end subroutine r_grid_cube_kernel

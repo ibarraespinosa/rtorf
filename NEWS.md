@@ -1,5 +1,9 @@
 # NEWS
 
+### rtorf 4.2.0 (Release date: 2026-03-30)
+
+Added Fortran subroutines to grid particles and smooth.
+
 ### rtorf 4.0.0 (Release date: 2026-03-24)
 
 Added Fortran subroutines to grid oparticles and smooth.

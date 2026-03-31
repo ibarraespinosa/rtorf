@@ -4,7 +4,16 @@
 \alias{obs_grid}
 \title{obs_grid}
 \usage{
-obs_grid(min.x, max.x, min.y, max.y, numpix.x, numpix.y, coarse.factor = 1)
+obs_grid(
+  min.x,
+  max.x,
+  min.y,
+  max.y,
+  numpix.x,
+  numpix.y,
+  coarse.factor = 1,
+  adaptive = TRUE
+)
 }
 \arguments{
 \item{min.x}{grid indices}
@@ -20,6 +29,8 @@ obs_grid(min.x, max.x, min.y, max.y, numpix.x, numpix.y, coarse.factor = 1)
 \item{numpix.y}{number pixels y}
 
 \item{coarse.factor}{integer to coarse the grid resolution}
+
+\item{adaptive}{logical, to use adaptive gridding}
 }
 \value{
 return footprint

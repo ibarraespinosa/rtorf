@@ -9,6 +9,7 @@
 #' @param numpix.x number pixels x
 #' @param numpix.y number pixels y
 #' @param coarse.factor integer to coarse the grid resolution
+#' @param adaptive logical, to use adaptive gridding
 #' @return return footprint
 #' @export
 #' @examples
@@ -20,7 +21,8 @@ obs_grid <- function(
   max.y,
   numpix.x,
   numpix.y,
-  coarse.factor = 1
+  coarse.factor = 1,
+  adaptive = TRUE
 ) {
   leng <- length(min.x)
   #number of elements, or timepoints
@@ -47,7 +49,7 @@ obs_grid <- function(
     gridname[minranxTF & minranyTF] <- i
   }
 
-  if (coarse.factor == 0) {
+  if (coarse.factor == 0 || !adaptive) {
     gridname <- rep(1, leng)
   } #use high resolution for coarse.factor 0
   #xpart & ypart can range betw. 0~3.These tell you which piece of whole grid is needed.

@@ -415,6 +415,9 @@ obs_julian <- function(y, m, d, origin., legacy = FALSE, verbose = TRUE) {
 #' @param npar default 500, number of particles hysplit was run with (required in order to
 #' account for those cases where a thinned particle table that may not contain all particle indices is used)
 #' @param eps.global default 0.01
+#' @param adaptive logical, if TRUE (default), uses adaptive gridding resolution in time.
+#' @param center logical, if TRUE (default FALSE), lon.ll and lat.ll are treated as cell centers and adjusted to edges internally.
+#' @param terminal_background logical, if TRUE (default), particles entering the background area are removed from the simulation from that point onward.
 #' @return return footprint
 #' @export
 #' @examples \dontrun{
@@ -436,8 +439,15 @@ obs_traj_foot <- function(
   lon.res = 1,
   lat.res = 1,
   npar = 500,
-  eps.global = 0.1
+  eps.global = 0.1,
+  adaptive = TRUE,
+  center = FALSE,
+  terminal_background = TRUE
 ) {
+  if (center) {
+    lon.ll <- lon.ll - lon.res / 2
+    lat.ll <- lat.ll - lat.res / 2
+  }
   part <- data.table::as.data.table(part)
   rqdnames <- c("time", "lat", "lon", "agl", "zi", "index", "foot")
   if (any(!(rqdnames %in% names(part)))) {
@@ -538,7 +548,7 @@ obs_traj_foot <- function(
   # ordering to make sure
   data.table::setorderv(part, c("btime", "index"))
 
-  if (is.null(periodic.nx)) {
+  if (is.null(periodic.nx) & terminal_background) {
     # Set the 'gitx' and 'gity' columns to NA for particles that have a gitx < 1.
     # This marks them as being outside the valid grid area.
 
@@ -668,7 +678,8 @@ obs_traj_foot <- function(
       max.y,
       numpix.x,
       numpix.y,
-      coarse.factor = coarse
+      coarse.factor = coarse,
+      adaptive = adaptive
     )
     emissname <- paste0(
       gridresult$xpart,

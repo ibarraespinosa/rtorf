@@ -20,7 +20,10 @@ obs_traj_foot(
   lon.res = 1,
   lat.res = 1,
   npar = 500,
-  eps.global = 0.1
+  eps.global = 0.1,
+  adaptive = TRUE,
+  center = FALSE,
+  terminal_background = TRUE
 )
 }
 \arguments{
@@ -56,6 +59,12 @@ obs_traj_foot(
 account for those cases where a thinned particle table that may not contain all particle indices is used)}
 
 \item{eps.global}{default 0.01}
+
+\item{adaptive}{logical, if TRUE (default), uses adaptive gridding resolution in time.}
+
+\item{center}{logical, if TRUE (default FALSE), lon.ll and lat.ll are treated as cell centers and adjusted to edges internally.}
+
+\item{terminal_background}{logical, if TRUE (default), particles entering the background area are removed from the simulation from that point onward.}
 }
 \value{
 return footprint

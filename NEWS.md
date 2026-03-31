@@ -1,5 +1,9 @@
 # NEWS
 
+### rtorf 4.3.0 (Release date: 2026-03-31)
+
+Addin adaptative gridding
+
 ### rtorf 4.2.0 (Release date: 2026-03-30)
 
 Added Fortran subroutines to grid particles and smooth.

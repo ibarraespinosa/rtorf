@@ -35,7 +35,7 @@ library(data.table)
 utils::packageVersion("rtorf")
 ```
 
-    ## [1] '4.1.0'
+    ## [1] '4.3.0'
 
 ## ObsPack summary
 

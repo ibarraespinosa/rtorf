@@ -365,7 +365,7 @@ obs_plot(df3[dataset_calibration_scale == "WMO CO2 X2019"],
          yfactor = 1e6)
 ```
 
-![](https://github.com/noaa-gml/rtorf/blob/main/man/figures/obsplot_aircraftpfp.png?raw=true)
+![](https://github.com/ibarraespinosa/rtorf/blob/main/man/figures/obsplot_aircraftpfp.png?raw=true)
 
 
 ```{r savesf, fig.width=5, fig.height=3, eval = T, echo = F}
@@ -408,7 +408,7 @@ plot(x["V1"],
 maps::map(add = T)
 ```
 
-![](https://github.com/noaa-gml/rtorf/blob/main/man/figures/obsplot_aircraftpfp_map.png?raw=true)
+![](https://github.com/ibarraespinosa/rtorf/blob/main/man/figures/obsplot_aircraftpfp_map.png?raw=true)
 
 
 
@@ -442,5 +442,5 @@ obs_plot(x,
 ```
 
 
-![](https://github.com/noaa-gml/rtorf/blob/main/man/figures/obsplot_aircraftpfp_vert.png?raw=true)
+![](https://github.com/ibarraespinosa/rtorf/blob/main/man/figures/obsplot_aircraftpfp_vert.png?raw=true)
 

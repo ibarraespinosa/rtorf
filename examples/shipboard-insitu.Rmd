@@ -133,7 +133,7 @@ dev.off()
 obs_plot(df, time = "timeUTC", yfactor = 1e9)
 ```
 
-![](https://github.com/noaa-gml/rtorf/blob/main/man/figures/obsplot_shipboardinsitu.png?raw=true)
+![](https://github.com/ibarraespinosa/rtorf/blob/main/man/figures/obsplot_shipboardinsitu.png?raw=true)
 
 
 ```{r savesf, fig.width=5, fig.height=3, eval = T, echo = F}
@@ -161,4 +161,4 @@ plot(x["value"], axes = T, reset = F)
 maps::map(add = T)
 ```
 
-![](https://github.com/noaa-gml/rtorf/blob/main/man/figures/obsplot_shipboardinsitu_map.png?raw=true)
+![](https://github.com/ibarraespinosa/rtorf/blob/main/man/figures/obsplot_shipboardinsitu_map.png?raw=true)

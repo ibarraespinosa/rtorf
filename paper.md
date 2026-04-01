@@ -1,6 +1,6 @@
 ---
 # Example from https://joss.readthedocs.io/en/latest/submitting.html
-title: "R Tools for Observations, Receptors and Footprints (rtorf) for processing atmospheric observations in NOAA-GML"
+title: "R Tools for Observations, Receptors and Footprints (rtorf) for processing atmospheric observations in ibarraespinosa"
 tags:
   - R
   - GHG
@@ -133,7 +133,7 @@ online diagram of the package[^2].
 
 
 ``` r
-remotes::install_github("noaa-gml/rtorf")
+remotes::install_github("ibarraespinosa/rtorf")
 ```
 
 
@@ -145,7 +145,7 @@ consists in create a
 summary of the ObsPack files, reading them in an iteration process, 
 filter and generating another output. As $CH_4$ ObsPACKGLOBALViewplus 5.1,
 the product used in this manuscript, includes dataid, we produced
-a guide for each of of them available at https://noaa-gml.github.io/rtorf.
+a guide for each of of them available at https://ibarraespinosa.github.io/rtorf.
 Then, in this manuscript we present the processing of `aircraft-insitu`.
 The obspack product in this case is `obspack_ch4_1_GLOBALVIEWplus_v5.1_2023-03-08`.
 
@@ -380,10 +380,10 @@ and run using `rslurm` for parallel processing[^4]. This capability is particula
 We are currently porting `rtorf` to python into a package named `pytorf`[^5].
 
 [^1]: https://gml.noaa.gov/
-[^2]: https://gitdiagram.com/noaa-gml/rtorfml
+[^2]: https://gitdiagram.com/ibarraespinosa/rtorfml
 [^3]: https://csvy.org/
-[^4]: https://noaa-gml.github.io/rtorf/articles/hysplit.ht
-[^5]: https://github.com/noaa-gml/pytorf
+[^4]: https://ibarraespinosa.github.io/rtorf/articles/hysplit.ht
+[^5]: https://github.com/ibarraespinosa/pytorf
 
 # Acknowledgements
 

@@ -8,12 +8,12 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ![GitHub commit
-activity](https://img.shields.io/github/commit-activity/y/noaa-gml/rtorf)
+activity](https://img.shields.io/github/commit-activity/y/ibarraespinosa/rtorf)
 
 [![R build
 status](https://github.com/ibarraespinosa/rtorf/workflows/draft-pdf/badge.svg)](https://github.com/ibarraespinosa/rtorf/actions)
 
-[![R-CMD-check](https://github.com/noaa-gml/torf/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/noaa-gml/torf/actions/workflows/R-CMD-check.yaml)
+[![R-CMD-check](https://github.com/ibarraespinosa/torf/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/ibarraespinosa/torf/actions/workflows/R-CMD-check.yaml)
 
 
 [NOAA Obspack](https://gml.noaa.gov/ccgg/obspack/) is a collection of green house gases observations
@@ -24,7 +24,7 @@ so it can be installed in any machine.
 ## installation
 
 ```{r, eval = F}
-remotes::install_github("noaa-gml/rtorf")
+remotes::install_github("ibarraespinosa/rtorf")
 ```
 
 ```{r, include = T, message=F, warning=F}

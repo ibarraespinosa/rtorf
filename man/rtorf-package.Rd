@@ -13,9 +13,9 @@ Ingest, process, and visualize atmospheric observation data, specifically tailor
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://github.com/noaa-gml/rtorf}
-  \item \url{https://noaa-gml.github.io/rtorf/}
-  \item Report bugs at \url{https://github.com/noaa-gml/rtorf/issues/}
+  \item \url{https://github.com/ibarraespinosa/rtorf}
+  \item \url{https://ibarraespinosa.github.io/rtorf/}
+  \item Report bugs at \url{https://github.com/ibarraespinosa/rtorf/issues/}
 }
 
 }

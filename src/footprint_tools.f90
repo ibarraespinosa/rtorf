@@ -80,8 +80,7 @@ contains
     call omp_set_num_threads(n_threads)
 
     !$OMP PARALLEL DO PRIVATE(k, i, j) &
-    !$OMP SHARED(p_lon, p_lat, p_foot, lon_min, lat_min, inv_res) &
-    !$OMP REDUCTION(+:grid_out)
+    !$OMP SHARED(p_lon, p_lat, p_foot, lon_min, lat_min, inv_res, grid_out)
     do k = 1, n_part
       ! floor() is correct for negative offsets;
       ! int() would misplace particles west/south of lon_min.
@@ -89,6 +88,7 @@ contains
       j = floor((p_lat(k) - lat_min) * inv_res) + 1
 
       if (i >= 1 .and. i <= nx .and. j >= 1 .and. j <= ny) then
+        !$omp atomic
         grid_out(j, i) = grid_out(j, i) + p_foot(k)
       end if
     end do
@@ -138,8 +138,7 @@ contains
     call omp_set_num_threads(n_threads)
 
     !$OMP PARALLEL DO PRIVATE(k, i, j, l, btime) &
-    !$OMP SHARED(p_lon, p_lat, p_time, p_foot, lon_min, lat_min, inv_res, t0, inv_dt, nt) &
-    !$OMP REDUCTION(+:grid_out)
+    !$OMP SHARED(p_lon, p_lat, p_time, p_foot, lon_min, lat_min, inv_res, t0, inv_dt, nt, grid_out)
     do k = 1, n_part
       ! Handle longitude and latitude
       i = floor((p_lon(k) - lon_min) * inv_res) + 1
@@ -150,6 +149,7 @@ contains
       l = floor(btime * inv_dt) + 1
 
       if (i >= 1 .and. i <= nx .and. j >= 1 .and. j <= ny .and. l >= 1 .and. l <= nt) then
+        !$omp atomic
         grid_out(j, i, l) = grid_out(j, i, l) + p_foot(k)
       end if
     end do

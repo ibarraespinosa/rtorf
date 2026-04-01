@@ -2,9 +2,9 @@ R Tools for Obspack, Receptors and Footprints (rtorf)
 ================
 
 ![GitHub commit
-activity](https://img.shields.io/github/commit-activity/y/noaa-gml/rtorf)
-[![R-CMD-check](https://github.com/noaa-gml/rtorf/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/noaa-gml/rtorf/actions/workflows/R-CMD-check.yaml)
-![GitHub Repo stars](https://img.shields.io/github/stars/noaa-gml/rtorf)
+activity](https://img.shields.io/github/commit-activity/y/ibarraespinosa/rtorf)
+[![R-CMD-check](https://github.com/ibarraespinosa/rtorf/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/ibarraespinosa/rtorf/actions/workflows/R-CMD-check.yaml)
+![GitHub Repo stars](https://img.shields.io/github/stars/ibarraespinosa/rtorf)
 
 [NOAA Obspack](https://gml.noaa.gov/ccgg/obspack/) is a collection of
 green house gases observations
@@ -15,7 +15,7 @@ parallel C, so it can be installed in any machine.
 ## Installation
 
 ``` r
-remotes::install_github("noaa-gml/rtorf")
+remotes::install_github("ibarraespinosa/rtorf")
 ```
 
 ``` r
@@ -76,7 +76,7 @@ index <- obs_summary(obs = obs, categories = cate)
 For each one of these dataset ids, check the articles in the
 documentation
 
-<https://noaa-gml.github.io/rtorf/>
+<https://ibarraespinosa.github.io/rtorf/>
 
 ## Implementation in python:
 

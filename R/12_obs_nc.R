@@ -78,8 +78,8 @@ obs_nc <- function(
       name = vars_out[l],
       units = units_out,
       dim = list(
-        latnc,
         lonnc,
+        latnc,
         time_receptor
       )
     )

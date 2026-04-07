@@ -9,7 +9,7 @@ make_args <- function(nlat = 3L, nlon = 4L, ntime = 2L) {
   lon      <- seq(-100, -97, length.out = nlon)
   time_nc  <- ISOdatetime(2020, 1, 1, 0, 0, 0, tz = "UTC") +
                (seq_len(ntime) - 1L) * 3600
-  arr      <- array(seq_len(nlat * nlon * ntime), dim = c(nlat, nlon, ntime))
+  arr      <- array(seq_len(nlat * nlon * ntime), dim = c(nlon, nlat, ntime))
   list(lat = lat, lon = lon, time_nc = time_nc, arr = arr)
 }
 

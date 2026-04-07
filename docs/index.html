@@ -18,7 +18,7 @@
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Observations, Footprints and Receptors (rtorf) and HYSPLIT Configuration Tools">
 <meta name="description" content="Ingest, process, and visualize atmospheric observation data, specifically tailored for the NOAA Global Monitoring Laboratory (GML) ObsPack GLOBALView+ products &lt;https://gml.noaa.gov/ccgg/obspack/index.html&gt;. Includes specialized routines for filtering trace gas time-series data based on meteorological and quality control parameters. Additionally, streamlines the generation of configuration files for the Hybrid Single-Particle Lagrangian Integrated Trajectory (HYSPLIT) model &lt;https://www.ready.noaa.gov/HYSPLIT.php&gt;, supporting high-throughput parallel processing of trajectory simulations.">
 <meta property="og:description" content="Ingest, process, and visualize atmospheric observation data, specifically tailored for the NOAA Global Monitoring Laboratory (GML) ObsPack GLOBALView+ products &lt;https://gml.noaa.gov/ccgg/obspack/index.html&gt;. Includes specialized routines for filtering trace gas time-series data based on meteorological and quality control parameters. Additionally, streamlines the generation of configuration files for the Hybrid Single-Particle Lagrangian Integrated Trajectory (HYSPLIT) model &lt;https://www.ready.noaa.gov/HYSPLIT.php&gt;, supporting high-throughput parallel processing of trajectory simulations.">
-<meta property="og:image" content="https://ibarraespinosa.github.io/rtorf/logo.png">
+<meta property="og:image" content="https://atmoschem.github.io/rtorf/logo.png">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="index.html">rtorf</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">4.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">4.3.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -75,23 +75,23 @@
 </h1>
 </div>
 <p><img src="reference/figures/logo.png" align="right" alt="" width="220"></p>
-<p><img src="https://img.shields.io/github/commit-activity/y/ibarraespinosa/rtorf" alt="GitHub commit activity"><a href="https://github.com/ibarraespinosa/rtorf/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/ibarraespinosa/rtorf/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a> <img src="https://img.shields.io/github/stars/ibarraespinosa/rtorf" alt="GitHub Repo stars"></p>
+<p><img src="https://img.shields.io/github/commit-activity/y/atmoschem/rtorf" alt="GitHub commit activity"><a href="https://github.com/atmoschem/rtorf/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/atmoschem/rtorf/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a> <img src="https://img.shields.io/github/stars/atmoschem/rtorf" alt="GitHub Repo stars"></p>
 <p><a href="https://gml.noaa.gov/ccgg/obspack/" class="external-link">NOAA Obspack</a> is a collection of greenhouse gases observations</p>
 <p><code>rtorf</code> only depends on <code>data.table</code> and <code>ncdf4</code>, which is basically parallel C, so it can be installed in any machine.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
 <p>Using git bash/powershell</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/ibarraespinosa/rtorf</span>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/atmoschem/rtorf</span>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="ex">R</span> CMD INSTALL rtorf</span></code></pre></div>
 <p>Using remotes R package</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"ibarraespinosa/rtorf"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"atmoschem/rtorf"</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/ibarraespinosa/rtorf" class="external-link">rtorf</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-datatable.com" class="external-link">data.table</a></span><span class="op">)</span></span>
 <span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html" class="external-link">packageVersion</a></span><span class="op">(</span><span class="st">"rtorf"</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb4"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="do">## [1] '4.3.0'</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="do">## [1] '4.3.2'</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="obspack-summary">ObsPack summary<a class="anchor" aria-label="anchor" href="#obspack-summary"></a>
@@ -123,23 +123,23 @@
 <span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="do">## Detected 0 files with agl</span></span>
 <span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="do">## Detected 0 files without agl</span></span></code></pre></div>
 <p>For each one of these dataset ids, check the articles in the documentation</p>
-<p><a href="https://ibarraespinosa.github.io/rtorf/" class="uri">https://ibarraespinosa.github.io/rtorf/</a></p>
-<p>e.g. for the <code>aircraft-pfp</code> we can read <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>C</mi><msub><mi>O</mi><mn>2</mn></msub></mrow><annotation encoding="application/x-tex">CO_2</annotation></semantics></math> and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>C</mi><msub><mi>H</mi><mn>4</mn></msub></mrow><annotation encoding="application/x-tex">CH_4</annotation></semantics></math><a href="https://ibarraespinosa.github.io/rtorf/articles/aircraft-pfp.html">here</a></p>
+<p><a href="https://atmoschem.github.io/rtorf/" class="uri">https://atmoschem.github.io/rtorf/</a></p>
+<p>e.g. for the <code>aircraft-pfp</code> we can read <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>C</mi><msub><mi>O</mi><mn>2</mn></msub></mrow><annotation encoding="application/x-tex">CO_2</annotation></semantics></math> and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>C</mi><msub><mi>H</mi><mn>4</mn></msub></mrow><annotation encoding="application/x-tex">CH_4</annotation></semantics></math><a href="https://atmoschem.github.io/rtorf/articles/aircraft-pfp.html">here</a></p>
 </div>
 <div class="section level2">
 <h2 id="implementation-in-python">Implementation in python:<a class="anchor" aria-label="anchor" href="#implementation-in-python"></a>
 </h2>
-<p>I’m currently implementing a version in python <a href="https://github.com/ibarraespinosa/pytorf" class="external-link">pytorf</a>:</p>
+<p>I’m currently implementing a version in python <a href="https://github.com/atmoschem/pytorf" class="external-link">pytorf</a>:</p>
 </div>
 <div class="section level2">
 <h2 id="special-thanks-to-all-the">Special thanks to all the<a class="anchor" aria-label="anchor" href="#special-thanks-to-all-the"></a>
 </h2>
 <p><strong>contributors</strong></p>
-<p><a href="https://github.com/ibarraespinosa/rtorf/graphs/contributors" class="external-link"><img src="https://contrib.rocks/image?repo=ibarraespinosa/rtorf" alt="Contributors"></a></p>
+<p><a href="https://github.com/atmoschem/rtorf/graphs/contributors" class="external-link"><img src="https://contrib.rocks/image?repo=atmoschem/rtorf" alt="Contributors"></a></p>
 <p>and</p>
 <p><strong>Stargazers</strong></p>
 <p>
-<a href="https://github.com/ibarraespinosa/rtorf/stargazers" class="external-link"> <img src="http://reporoster.com/stars/dark/ibarraespinosa/rtorf"></a>
+<a href="https://github.com/atmoschem/rtorf/stargazers" class="external-link"> <img src="http://reporoster.com/stars/dark/atmoschem/rtorf"></a>
 </p>
 <div class="section level3">
 <h3 id="note-about-legacy-code">Note about legacy code.<a class="anchor" aria-label="anchor" href="#note-about-legacy-code"></a>

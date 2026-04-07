@@ -60,9 +60,9 @@ obs_nc <- function(
     stop("Missing units_out")
   }
 
-  latnc <- ncdf4::ncdim_def("longitude", "degreesE", as.double(lat))
+  lonnc <- ncdf4::ncdim_def("longitude", "degreesE", as.double(lon))
 
-  lonnc <- ncdf4::ncdim_def("latitude", "degreesN", as.double(lon))
+  latnc <- ncdf4::ncdim_def("latitude", "degreesN", as.double(lat))
 
   # time_receptor  = rep(time_nc - (dim(foot)[3] - 1)*3600, dim(foot)[3])
 
@@ -78,8 +78,8 @@ obs_nc <- function(
       name = vars_out[l],
       units = units_out,
       dim = list(
-        lonnc,
         latnc,
+        lonnc,
         time_receptor
       )
     )
@@ -108,7 +108,7 @@ obs_nc <- function(
     )
   ))
 
-  for (i in 1:length(g_atributos)) {
+  for (i in seq_along(g_atributos)) {
     ncdf4::ncatt_put(
       a,
       varid = 0,
@@ -183,7 +183,7 @@ obs_nc_get <- function(
   ncdf4::nc_close(nc)
 
   if (all) {
-    return(list(lat = foot1lon, lon = foot1lat, array = foot))
+    return(list(lat = foot1lat, lon = foot1lon, array = foot))
   } else {
     return(foot)
   }

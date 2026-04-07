@@ -1,8 +1,17 @@
 # NEWS
 
+### rtorf 4.3.2 (Release date: 2026-04-07)
+
+rather obscure bug that reversed axis in obs_nc. Added tests
+
+### rtorf 4.3.1 (Release date: 2026-04-01)
+
+moved repo to atmoschem
+
 ### rtorf 4.3.0 (Release date: 2026-03-31)
 
-Addin adaptative gridding
+Adding adaptative gridding
+moved URLS to ibarraespinosa
 
 ### rtorf 4.2.0 (Release date: 2026-03-30)
 

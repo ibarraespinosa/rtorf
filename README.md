@@ -4,10 +4,10 @@ R Tools for Observations, Receptors and Footprints (rtorf)
 <img src="man/figures/logo.png" align="right" alt="" width="220" />
 
 ![GitHub commit
-activity](https://img.shields.io/github/commit-activity/y/ibarraespinosa/rtorf)
-[![R-CMD-check](https://github.com/ibarraespinosa/rtorf/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/ibarraespinosa/rtorf/actions/workflows/R-CMD-check.yaml)
+activity](https://img.shields.io/github/commit-activity/y/atmoschem/rtorf)
+[![R-CMD-check](https://github.com/atmoschem/rtorf/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/atmoschem/rtorf/actions/workflows/R-CMD-check.yaml)
 ![GitHub Repo
-stars](https://img.shields.io/github/stars/ibarraespinosa/rtorf)
+stars](https://img.shields.io/github/stars/atmoschem/rtorf)
 
 [NOAA Obspack](https://gml.noaa.gov/ccgg/obspack/) is a collection of
 greenhouse gases observations
@@ -20,14 +20,14 @@ parallel C, so it can be installed in any machine.
 Using git bash/powershell
 
 ``` bash
-git clone https://github.com/ibarraespinosa/rtorf
+git clone https://github.com/atmoschem/rtorf
 R CMD INSTALL rtorf
 ```
 
 Using remotes R package
 
 ``` r
-remotes::install_github("ibarraespinosa/rtorf")
+remotes::install_github("atmoschem/rtorf")
 ```
 
 ``` r
@@ -36,7 +36,7 @@ library(data.table)
 utils::packageVersion("rtorf")
 ```
 
-    ## [1] '4.3.0'
+    ## [1] '4.3.2'
 
 ## ObsPack summary
 
@@ -83,21 +83,21 @@ index <- obs_summary(obs = obs, categories = cate)
 For each one of these dataset ids, check the articles in the
 documentation
 
-<https://ibarraespinosa.github.io/rtorf/>
+<https://atmoschem.github.io/rtorf/>
 
 e.g. for the `aircraft-pfp` we can read $CO_2$ and $CH_4$
-[here](https://ibarraespinosa.github.io/rtorf/articles/aircraft-pfp.html)
+[here](https://atmoschem.github.io/rtorf/articles/aircraft-pfp.html)
 
 ## Implementation in python:
 
 I’m currently implementing a version in python
-[pytorf](https://github.com/ibarraespinosa/pytorf):
+[pytorf](https://github.com/atmoschem/pytorf):
 
 ## Special thanks to all the
 
 **contributors**
 
-[![Contributors](https://contrib.rocks/image?repo=ibarraespinosa/rtorf)](https://github.com/ibarraespinosa/rtorf/graphs/contributors)
+[![Contributors](https://contrib.rocks/image?repo=atmoschem/rtorf)](https://github.com/atmoschem/rtorf/graphs/contributors)
 
 and
 
@@ -105,8 +105,8 @@ and
 
 <p>
 
-<a href="https://github.com/ibarraespinosa/rtorf/stargazers">
-<img src="http://reporoster.com/stars/dark/ibarraespinosa/rtorf"/> </a>
+<a href="https://github.com/atmoschem/rtorf/stargazers">
+<img src="http://reporoster.com/stars/dark/atmoschem/rtorf"/> </a>
 </p>
 
 ### Note about legacy code.
